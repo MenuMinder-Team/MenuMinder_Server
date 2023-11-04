@@ -33,8 +33,7 @@ namespace BusinessObjects.DataAccess
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Server=localhost;Port=5432;User ID=postgres;Password=Bi126126;Database=postgres;");
+                optionsBuilder.UseNpgsql("Server=dpg-cl2snkhnovjs73b74aeg-a.singapore-postgres.render.com;Port=5432;User ID=menu_minder_user;Password=Q0jc58w87EmBj456bRAL83rfWZlGNnyX;Database=menu_minder_db;");
             }
         }
 
