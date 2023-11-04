@@ -1,4 +1,5 @@
 using BusinessObjects.DataAccess;
+using BusinessObjects.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Repositories;
 
@@ -16,8 +17,9 @@ namespace MenuMinderAPI.Controllers
 
         //POST: ProductsController/Products
         [HttpPost]
-        public IActionResult PostProduct(DiningTable table)
+        public IActionResult PostProduct(DiningTableDTO dto)
         {
+            DiningTable table = new DiningTable(dto);
             repository.SaveDiningTable(table);
             return Ok(table);
         }
@@ -34,8 +36,9 @@ namespace MenuMinderAPI.Controllers
         }
 
         [HttpPut("id")]
-        public IActionResult UpdateProduct(int id, DiningTable table)
+        public IActionResult UpdateProduct(int id, DiningTableDTO dto)
         {
+            DiningTable table = new DiningTable(dto);
             if (id != table.TableId)
             {
                 return BadRequest();
