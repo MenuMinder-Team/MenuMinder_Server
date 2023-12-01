@@ -10,14 +10,19 @@ using Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 // Configure AutoMapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+
+
+// configure DI for application repositories
+builder.Services.AddScoped<DiningTableRepository, DiningTableRepository>();
+
+// configure DI for DBContext
+builder.Services.AddScoped<Menu_minder_dbContext, Menu_minder_dbContext>();
 
 var app = builder.Build();
 
