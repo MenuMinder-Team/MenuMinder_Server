@@ -20,6 +20,7 @@ builder.Logging.AddConsole();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 
+// builder.Services.AddScoped<GlobalExceptionMiddleware>();
 
 // configure DI for application repositories
 builder.Services.AddScoped<DiningTableRepository, DiningTableRepository>();
@@ -42,6 +43,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+//app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.MapControllers();
 
