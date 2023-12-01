@@ -2,21 +2,13 @@
 using System;
 using System.Collections.Generic;
 
-namespace BusinessObjects.DataAccess
+namespace BusinessObjects.DataModels
 {
     public partial class DiningTable
     {
         public DiningTable()
         {
             TableUseds = new HashSet<TableUsed>();
-        }
-
-        public DiningTable(DiningTableDTO dto)
-        {
-            CreatedBy = dto.CreatedBy;
-            Status = dto.Status;
-            TableNumber = dto.TableNumber;
-            Capacity = dto.Capacity;
         }
 
         public int TableId { get; set; }

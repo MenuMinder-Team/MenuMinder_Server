@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace BusinessObjects.DataAccess
+namespace BusinessObjects.DataModels
 {
-    public partial class menu_minder_dbContext : DbContext
+    public partial class Menu_minder_dbContext : DbContext
     {
-        public menu_minder_dbContext()
+
+        public Menu_minder_dbContext()
         {
         }
 
-        public menu_minder_dbContext(DbContextOptions<menu_minder_dbContext> options)
+        public Menu_minder_dbContext(DbContextOptions<Menu_minder_dbContext> options)
             : base(options)
         {
         }

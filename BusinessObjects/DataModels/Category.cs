@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace BusinessObjects.DataAccess
+namespace BusinessObjects.DataModels
 {
     public partial class Category
     {
