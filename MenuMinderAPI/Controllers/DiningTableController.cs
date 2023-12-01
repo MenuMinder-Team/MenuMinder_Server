@@ -1,53 +1,66 @@
-using BusinessObjects.DataAccess;
+﻿using System.Collections.Generic;
+using System.Net;
+using BusinessObjects.DataModels;
 using BusinessObjects.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Repositories;
+using Services;
 
 namespace MenuMinderAPI.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("/api/dining-tables")]
     public class DiningTableController : ControllerBase
     {
-        private DiningTableRepository repository = new DiningTableRepository();
+        private readonly DiningTableService _diningTableService;
+        private readonly ILogger<DiningTableRepository> _logger;
 
-        //GET: api/Products
+        public DiningTableController(DiningTableService diningTableService, ILogger<DiningTableRepository> logger)
+        {
+            this._diningTableService = diningTableService;
+            this._logger = logger;
+        }
+
+        // GET: api/dining-tables
         [HttpGet]
-        public ActionResult<IEnumerable<DiningTable>> GetAllDiningTables() => repository.GetAllDiningTables();
-
-        //POST: ProductsController/Products
-        [HttpPost]
-        public IActionResult PostProduct(DiningTableDTO dto)
+        public async Task<ActionResult> GetAllDiningTables()
         {
-            DiningTable table = new DiningTable(dto);
-            repository.SaveDiningTable(table);
-            return Ok(table);
-        }
+            ApiResponse<List<ResultDiningTableDto>> response = new ApiResponse<List<ResultDiningTableDto>>();
 
-        //GET: ProductsController/Delete/5
-        [HttpDelete("id")]
-        public IActionResult DeleteProduct(int id)
-        {
-            var p = repository.GetDiningTableById(id);
-            if (p == null)
-                return NotFound();
-            repository.DeleteDiningTable(p);
-            return Ok(p);
-        }
-
-        [HttpPut("id")]
-        public IActionResult UpdateProduct(int id, DiningTableDTO dto)
-        {
-            DiningTable table = new DiningTable(dto);
-            if (id != table.TableId)
+            try
             {
-                return BadRequest();
+                List <ResultDiningTableDto> results = await this._diningTableService.GetAllDiningTables();
+                response.data = results;
             }
-            var pTmp = repository.GetDiningTableById(id);
-            if (pTmp == null)
-                return NotFound();
-            repository.UpdateDiningTable(table);
-            return Ok(table);
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex.ToString());
+                response.errorMessage = ex.Message;
+                response.statusCode = (int)HttpStatusCode.BadRequest;
+            }
+
+            return Ok(response);
+        }
+
+        // POST: api/dining-tables/create
+        [HttpPost("create")]
+        public async Task<ActionResult> CreateDiningTable([FromBody] CreateDiningTableDto dataInvo)
+        {
+            ApiResponse<string> response = new ApiResponse<string>();
+
+            try
+            {
+                await this._diningTableService.CreateDiningTable(dataInvo);
+                response.message = "created dining table success.";
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex.ToString());
+                response.errorMessage = ex.Message;
+                response.statusCode = (int)HttpStatusCode.BadRequest;
+            }
+
+            return Ok(response);
         }
     }
 }
