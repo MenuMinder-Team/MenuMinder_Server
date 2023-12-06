@@ -10,12 +10,10 @@ namespace Services
     public class DiningTableService
     {
         private readonly DiningTableRepository _diningTableRepository;
-        private readonly IMapper _mapper;
 
-        public DiningTableService(DiningTableRepository diningTableRepository, IMapper mapper)
+        public DiningTableService(DiningTableRepository diningTableRepository)
         {
             this._diningTableRepository = diningTableRepository;
-            this._mapper = mapper;
         }
 
         public async Task<List<ResultDiningTableDto>> GetAllDiningTables()

@@ -19,8 +19,7 @@ namespace BusinessObjects.DTO
         
         [Required] 
         public int Capacity { get; set; }
-}
-
+    }
 
     public record ResultDiningTableDto
     {

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Repositories;
+using Repositories.Implementations;
 using Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,12 +25,16 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 // configure DI for application repositories
 builder.Services.AddScoped<DiningTableRepository, DiningTableRepository>();
+builder.Services.AddScoped<FoodRepository, FoodRepository>();
+builder.Services.AddScoped<CategoryRepository, CategoryRepository>();
 
 // configure DI for DBContext
 builder.Services.AddScoped<Menu_minder_dbContext, Menu_minder_dbContext>();
 
 // configure DI for application services
 builder.Services.AddScoped<DiningTableService, DiningTableService>();
+builder.Services.AddScoped<FoodService, FoodService>();
+builder.Services.AddScoped<CategoryService, CategoryService>();
 
 var app = builder.Build();
 
