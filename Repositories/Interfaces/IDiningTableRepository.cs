@@ -12,10 +12,10 @@ namespace Repositories.Interfaces
     {
         public Task<List<ResultDiningTableDto>> GetAllDiningTables();
         public Task SaveDiningTable(DiningTable table);
-
-        /*public DiningTable FindDiningTableById(int tableId);
-        public void UpdateDiningTable(DiningTable table);
-        public void DeleteDiningTable(DiningTable table);*/
+        public Task<ResultDiningTableDto> FindDiningTableById(int tableId);
+        public Task<DiningTable> FindDiningTableEntityById(int tableId);
+        public Task UpdateDiningTable(DiningTable table);
+        public Task DeleteDiningTable(DiningTable table);
 
     }
 }

@@ -29,8 +29,29 @@ namespace MenuMinderAPI.Controllers
 
             try
             {
-                List <ResultDiningTableDto> results = await this._diningTableService.GetAllDiningTables();
+                List<ResultDiningTableDto> results = await this._diningTableService.GetAllDiningTables();
                 response.data = results;
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex.ToString());
+                response.errorMessage = ex.Message;
+                response.statusCode = (int)HttpStatusCode.BadRequest;
+            }
+
+            return Ok(response);
+        }
+
+        // GET: api/dining-tables/{id}
+        [HttpGet("{id}")]
+        public async Task<ActionResult> GetDiningTableById([FromRoute] int id)
+        {
+            ApiResponse<ResultDiningTableDto> response = new ApiResponse<ResultDiningTableDto>();
+
+            try
+            {
+                ResultDiningTableDto result = await this._diningTableService.FindDiningTableById(id);
+                response.data = result;
             }
             catch (Exception ex)
             {
@@ -52,6 +73,47 @@ namespace MenuMinderAPI.Controllers
             {
                 await this._diningTableService.CreateDiningTable(dataInvo);
                 response.message = "created dining table success.";
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex.ToString());
+                response.errorMessage = ex.Message;
+                response.statusCode = (int)HttpStatusCode.BadRequest;
+            }
+
+            return Ok(response);
+        }
+
+        // PUT: api/dining-tables/{id}
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateDiningTable([FromBody] CreateDiningTableDto dataInvo, [FromRoute] int id)
+        {
+            ApiResponse<string> response = new ApiResponse<string>();
+
+            try
+            {
+                await this._diningTableService.UpdateDiningTable(dataInvo, id);
+                response.message = "update dining table success.";
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex.ToString());
+                response.errorMessage = ex.Message;
+                response.statusCode = (int)HttpStatusCode.BadRequest;
+            }
+
+            return Ok(response);
+        }
+
+        // DELETE: api/dining-tables/{id}
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteDiningTable([FromRoute] int id)
+        {
+            ApiResponse<string> response = new ApiResponse<string>();
+            try
+            {
+                await this._diningTableService.DeleteDiningTableById(id);
+                response.message = "delete dining table success.";
             }
             catch (Exception ex)
             {

@@ -3,6 +3,7 @@ using BusinessObjects.DTO;
 using Repositories;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
+using BusinessObjects.Enum;
 
 namespace Services
 {
@@ -23,6 +24,16 @@ namespace Services
             return diningTableResults;
         }
 
+        public async Task<DiningTable> FindDiningTableEntityById(int tableId)
+        {
+            return await _diningTableRepository.FindDiningTableEntityById(tableId);
+        }
+
+        public async Task<ResultDiningTableDto> FindDiningTableById(int tableId)
+        {
+            return await _diningTableRepository.FindDiningTableById(tableId);
+        }
+
         public async Task CreateDiningTable(CreateDiningTableDto dataInvo)
         {
             DiningTable diningTableCreate = new DiningTable();
@@ -30,8 +41,39 @@ namespace Services
             diningTableCreate.TableNumber = dataInvo.TableNumber;
             diningTableCreate.Capacity = dataInvo.Capacity;
             diningTableCreate.CreatedBy = dataInvo.CreatedBy;
+            diningTableCreate.Status = EnumTableStatus.AVAILABLE.ToString();
             // save data
             await _diningTableRepository.SaveDiningTable(diningTableCreate);
+        }
+
+        public async Task UpdateDiningTable(CreateDiningTableDto dataInvo, int tableId)
+        {
+            DiningTable diningTableUpdate = await FindDiningTableEntityById(tableId);
+
+            if (diningTableUpdate == null)
+            {
+                throw new Exception($"Cannot find table with id: {tableId}");
+
+            }
+
+            // set data
+            diningTableUpdate.TableNumber = dataInvo.TableNumber;
+            diningTableUpdate.Capacity = dataInvo.Capacity;
+            diningTableUpdate.UpdatedAt = DateTime.Now;
+            // update data
+            await _diningTableRepository.UpdateDiningTable(diningTableUpdate);
+        }
+
+        public async Task DeleteDiningTableById(int tableId)
+        {
+            DiningTable diningTable = await FindDiningTableEntityById(tableId);
+
+            if (diningTable == null)
+            {
+                throw new Exception($"Cannot find table with id: {tableId}");
+            }
+
+            await _diningTableRepository.DeleteDiningTable(diningTable);
         }
     }
 }

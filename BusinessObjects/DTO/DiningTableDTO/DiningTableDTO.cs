@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BusinessObjects.Enum;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -12,8 +13,6 @@ namespace BusinessObjects.DTO
     {
         [Required]
         public Guid CreatedBy { get; set; }
-        
-        public string? Status { get; set; } = "PENDING";
 
         [Required]
         public string TableNumber { get; set; }
