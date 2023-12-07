@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.Configuration;
 
 namespace BusinessObjects.DataModels
 {
@@ -34,7 +35,12 @@ namespace BusinessObjects.DataModels
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseNpgsql("Server=dpg-cl2snkhnovjs73b74aeg-a.singapore-postgres.render.com;Port=5432;User ID=menu_minder_user;Password=Q0jc58w87EmBj456bRAL83rfWZlGNnyX;Database=menu_minder_db;");
+                IConfigurationRoot configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+                string connectionString = configuration.GetConnectionString("DefaultConnection");
+                optionsBuilder.UseNpgsql(connectionString);
             }
         }
 
@@ -64,6 +70,8 @@ namespace BusinessObjects.DataModels
                     .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                 entity.Property(e => e.DateOfBirth).HasColumnName("date_of_birth");
+
+                entity.Property(e => e.Role).HasColumnName("role");
 
                 entity.Property(e => e.Email).HasColumnName("email");
 
