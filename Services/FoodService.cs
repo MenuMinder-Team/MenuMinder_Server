@@ -35,9 +35,9 @@ namespace Services
             return foodResults;
         }
 
-        public async Task<List<IGrouping<string, ResultFoodDto>>> GetAllFoodsForCustomerGroupedByCategory()
+        public async Task<Dictionary<string, List<ResultFoodDto>>> GetAllFoodsForCustomerGroupedByCategory()
         {
-            List<IGrouping<string, ResultFoodDto>> foodResults = await this._foodRepository.GetAllFoodsForCustomerGroupedByCategory();
+            Dictionary<string, List<ResultFoodDto>> foodResults = await this._foodRepository.GetAllFoodsForCustomerGroupedByCategory();
             return foodResults;
         }
 

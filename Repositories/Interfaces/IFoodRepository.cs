@@ -12,7 +12,7 @@ namespace Repositories.Interfaces
     {
         public Task<List<ResultFoodDto>> GetAllFoodsForCustomer();
         public Task<List<ResultFoodDto>> GetAllFoodsForAdmin();
-        public Task<List<IGrouping<string, ResultFoodDto>>> GetAllFoodsForCustomerGroupedByCategory();
+        public Task<Dictionary<string, List<ResultFoodDto>>> GetAllFoodsForCustomerGroupedByCategory();
         public Task SaveFood(Food food);
         public Task<ResultFoodDto> FindFoodById(int foodId);
         public Task<Food> FindFoodEntityById(int foodId);

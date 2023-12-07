@@ -71,13 +71,13 @@ namespace MenuMinderAPI.Controllers
 
         // GET: api/foods/group-by-category
         [HttpGet("group-by-category")]
-        public async Task<ActionResult<List<ResultFoodDto>>> GetFoodsGroupByCategory()
+        public async Task<ActionResult<Dictionary<string, List<ResultFoodDto>>>> GetFoodsGroupByCategory()
         {
-            ApiResponse<List<IGrouping<string, ResultFoodDto>>> response = new ApiResponse<List<IGrouping<string, ResultFoodDto>>>();
+            ApiResponse<Dictionary<string, List<ResultFoodDto>>> response = new ApiResponse<Dictionary<string, List<ResultFoodDto>>>();
 
             try
             {
-                List<IGrouping<string, ResultFoodDto>> results = await this._service.GetAllFoodsForCustomerGroupedByCategory();
+                Dictionary<string, List<ResultFoodDto>> results = await this._service.GetAllFoodsForCustomerGroupedByCategory();
                 response.data = results;
             }
             catch (Exception ex)

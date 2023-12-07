@@ -103,7 +103,7 @@ namespace Repositories.Implementations
             try
             {
                 data = await _context.Foods
-                    .Where(food => (food.Status != EnumFoodStatus.DELETED.ToString() && food.Status != EnumFoodStatus.HIDDEN.ToString()))
+                    .Where(food => food.Status == EnumFoodStatus.AVAILABLE.ToString())
                     .Select(food => _mapper.Map<ResultFoodDto>(food)).ToListAsync();
 
             }
@@ -115,32 +115,36 @@ namespace Repositories.Implementations
             return data;
         }
 
-        public async Task<List<IGrouping<string, ResultFoodDto>>> GetAllFoodsForCustomerGroupedByCategory()
+        public async Task<Dictionary<string, List<ResultFoodDto>>> GetAllFoodsForCustomerGroupedByCategory()
         {
             try
             {
-                var groupedData = await _context.Categories
-                    .GroupJoin(
-                        _context.Foods
-                            .Where(food => food.Status != EnumFoodStatus.DELETED.ToString() && food.Status != EnumFoodStatus.HIDDEN.ToString()),
-                        category => category.CategoryId,
-                        food => food.CategoryId,
-                        (category, foods) => new
-                        {
-                            CategoryName = category.CategoryName,
-                            Foods = foods.Select(food => _mapper.Map<ResultFoodDto>(food)).ToList()
-                        })
+                var categories = await _context.Categories.ToListAsync();
+
+                var foods = await _context.Foods
+                    .Where(food => food.Status == EnumFoodStatus.AVAILABLE.ToString())
                     .ToListAsync();
 
-                return groupedData.Select(group => new Grouping<string, ResultFoodDto>(group.CategoryName, group.Foods))
-                                  .Cast<IGrouping<string, ResultFoodDto>>()
-                                  .ToList();
+                var groupedData = categories
+                    .GroupJoin(
+                        foods,
+                        category => category.CategoryId,
+                        food => food.CategoryId,
+                        (category, categoryFoods) => new
+                        {
+                            CategoryName = category.CategoryName,
+                            Foods = categoryFoods.Select(food => _mapper.Map<ResultFoodDto>(food)).ToList()
+                        })
+                    .ToDictionary(group => group.CategoryName, group => group.Foods);
+
+                return groupedData;
             }
             catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
         }
+
 
         public async Task SaveFood(Food food)
         {
