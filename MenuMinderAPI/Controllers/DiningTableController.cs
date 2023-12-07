@@ -35,7 +35,6 @@ namespace MenuMinderAPI.Controllers
             catch (Exception ex)
             {
                 this._logger.LogError(ex.ToString());
-                response.errorMessage = ex.Message;
                 response.statusCode = (int)HttpStatusCode.BadRequest;
             }
 
@@ -77,7 +76,6 @@ namespace MenuMinderAPI.Controllers
             catch (Exception ex)
             {
                 this._logger.LogError(ex.ToString());
-                response.errorMessage = ex.Message;
                 response.statusCode = (int)HttpStatusCode.BadRequest;
             }
 
