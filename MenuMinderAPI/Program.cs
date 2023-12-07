@@ -53,6 +53,11 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 // builder.Services.AddScoped<GlobalExceptionMiddleware>();
 
+// configure DI for application repositories
+builder.Services.AddScoped<DiningTableRepository, DiningTableRepository>();
+builder.Services.AddScoped<FoodRepository, FoodRepository>();
+builder.Services.AddScoped<CategoryRepository, CategoryRepository>();
+
 // configure DI for DBContext
 builder.Services.AddScoped<Menu_minder_dbContext, Menu_minder_dbContext>();
 
@@ -64,6 +69,8 @@ builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<DiningTableService, DiningTableService>();
 builder.Services.AddScoped<AuthService, AuthService>();
 builder.Services.AddScoped<JwtServices, JwtServices>();
+builder.Services.AddScoped<FoodService, FoodService>();
+builder.Services.AddScoped<CategoryService, CategoryService>();
 
 var app = builder.Build();
 

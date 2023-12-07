@@ -150,6 +150,11 @@ namespace BusinessObjects.DataModels
                     .HasColumnType("timestamp without time zone")
                     .HasColumnName("updated_at")
                     .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                entity.Property(e => e.Status)
+                    .HasMaxLength(10)
+                    .HasColumnName("status")
+                    .HasDefaultValueSql("'ACTIVE'::character varying");
             });
 
             modelBuilder.Entity<DiningTable>(entity =>
