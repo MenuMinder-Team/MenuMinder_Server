@@ -30,6 +30,16 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddLogging();
 builder.Logging.AddConsole();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy",
+        builder => builder
+             .SetIsOriginAllowed(_ => true)
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials());
+});
+
 // Configure JWT scheama
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -73,6 +83,7 @@ builder.Services.AddScoped<FoodService, FoodService>();
 builder.Services.AddScoped<CategoryService, CategoryService>();
 
 var app = builder.Build();
+app.UseCors("CorsPolicy");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
