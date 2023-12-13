@@ -74,10 +74,12 @@ builder.Services.AddScoped<Menu_minder_dbContext, Menu_minder_dbContext>();
 // configure DI for application repositories
 builder.Services.AddScoped<IDiningTableRepository, DiningTableRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddScoped<IPermitRepository, PermitRepository>();
 
 // configure DI for application services
 builder.Services.AddScoped<DiningTableService, DiningTableService>();
 builder.Services.AddScoped<AuthService, AuthService>();
+builder.Services.AddScoped<AccountService, AccountService>();
 builder.Services.AddScoped<JwtServices, JwtServices>();
 builder.Services.AddScoped<FoodService, FoodService>();
 builder.Services.AddScoped<CategoryService, CategoryService>();
