@@ -23,8 +23,15 @@ namespace Repositories.Implementations
 
         public async Task<Account> getAccountByEmail(string email)
         {
-            Account account = await this._context.Accounts.FirstOrDefaultAsync(e => e.Email == email);
+            Account? account = await this._context.Accounts.FirstOrDefaultAsync(e => e.Email == email);
             return account;
+        }
+
+        public async Task<Account> SaveAccount(Account accountData)
+        {
+            this._context.Accounts.Add(accountData);
+            await this._context.SaveChangesAsync();
+            return accountData;
         }
     }
 }

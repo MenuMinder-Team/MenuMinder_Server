@@ -4,13 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BusinessObjects.DataModels;
-using BusinessObjects.DTO;
 
 namespace Repositories.Interfaces
 {
-    public interface IAccountRepository
+    public interface IPermitRepository
     {
-        public Task<Account> getAccountByEmail(string email);
-        public Task<Account> SaveAccount(Account accountData);
+        public Task createBulkPermits(Permit[] permits);
     }
-}
+} 

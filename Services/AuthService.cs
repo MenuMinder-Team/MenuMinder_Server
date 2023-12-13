@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -9,6 +10,7 @@ using BusinessObjects.DataModels;
 using BusinessObjects.DTO;
 using BusinessObjects.DTO.AuthDTO;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Repositories;
 using Repositories.Interfaces;
 using Services.Exceptions;
@@ -24,7 +26,7 @@ namespace Services
         private readonly IAccountRepository _accountRepository;
         private readonly JwtServices _jwtService;
 
-        public AuthService(ILogger<AuthService> logger, IMapper mapper, JwtServices jwtService, IAccountRepository accountRepository )
+        public AuthService(ILogger<AuthService> logger, IMapper mapper, JwtServices jwtService, IAccountRepository accountRepository)
         {
             this._logger = logger;
             this._mapper = mapper;
@@ -59,13 +61,13 @@ namespace Services
                 }
 
                 // generate AccessToken JWT
-                string accessToken = _jwtService.GenerateToken(accountExistMap.AccountId.ToString(), accountExistMap.Email, accountExistMap.Role);
+                string accessToken = _jwtService.GenerateToken(accountExistMap.AccountId.ToString(), accountExistMap.Email, accountExistMap.Role.ToString());
 
                 ResultLoginDto resultLogin = this._mapper.Map<GetAuthAccountDto, ResultLoginDto>(accountExistMap);
                 resultLogin.AccessToken = accessToken;
                 return resultLogin;
             }
-            catch(BadRequestException ex)
+            catch (BadRequestException ex)
             {
                 throw ex;
             }
@@ -78,6 +80,13 @@ namespace Services
                 this._logger.LogError(ex.ToString());
                 throw new Exception(ex.Message);
             }
+        }
+
+        public async Task<ResultValidateTokenDto> TestVerifyToken(string token)
+        {
+            ResultValidateTokenDto data = this._jwtService.VerifyToken(token);
+
+            return data;
         }
     }
 }
