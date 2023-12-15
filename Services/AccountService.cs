@@ -1,27 +1,26 @@
-﻿using System;
+﻿using AutoMapper;
+using BusinessObjects.DataModels;
+using BusinessObjects.DTO.AccountDTO;
+using Microsoft.Extensions.Logging;
+using Repositories.Interfaces;
+using Services.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AutoMapper;
-using BusinessObjects.DataModels;
-using BusinessObjects.DTO.AccountDTO;
-using BusinessObjects.DTO.PermitDTO;
-using Microsoft.Extensions.Logging;
-using Repositories.Implementations;
-using Repositories.Interfaces;
 using Services.Exceptions;
 
 namespace Services
 {
     public class AccountService
     {
-        private readonly ILogger<AccountService> _logger;
         private readonly IMapper _mapper;
+        private readonly ILogger<AuthService> _logger;
         private readonly IAccountRepository _accountRepository;
-        private readonly IPermitRepository _permitRepository;  
+        private readonly IPermitRepository _permitRepository;
 
-        public AccountService(ILogger<AccountService> logger, IMapper mapper, IAccountRepository accountRepository, IPermitRepository permitRepository)
+        public AccountService(ILogger<AuthService> logger, IMapper mapper, JwtServices jwtService, IAccountRepository accountRepository, IPermitRepository permitRepository)
         {
             this._logger = logger;
             this._mapper = mapper;
@@ -43,7 +42,8 @@ namespace Services
 
                 // check Account already exists
                 Account? isExistAcccount = await this._accountRepository.getAccountByEmail(accountCreate.Email);
-                if (isExistAcccount != null) {
+                if (isExistAcccount != null)
+                {
                     throw new BadRequestException("Email already exists.");
                 }
 
@@ -58,7 +58,7 @@ namespace Services
                     await this._permitRepository.createBulkPermits(permitCreates);
                     accountResult.PermissionIds = dataInvo.PermissionIds;
                 };
-                
+
                 return accountResult;
             }
             catch (BadRequestException ex)
@@ -75,5 +75,54 @@ namespace Services
                 throw new Exception(ex.Message);
             }
         }
+
+        //public async Task<List<Permit>> PermissionsToPermits(List<int> permissionIds , Account account)
+        //{
+        //    await _permitRepository.DeletePermitByUserId(account.AccountId);
+
+        //    List<Permit> result = new List<Permit>();
+
+        //    foreach (int permissionId in permissionIds)
+        //    {
+        //        Permit permit = new Permit();
+        //        permit.PermissionId = permissionId;
+        //        permit.AccountId = account.AccountId;
+
+        //        await _permitRepository.SavePermit(permit);
+
+        //        result.Add(permit);
+        //    }
+
+        //    return result;
+        //}
+
+
+        //public async Task<List<ResultAccountDTO>> GetAllAccounts()
+        //{
+        //    return await _accountRepository.getAllAccounts();
+        //}
+
+        //public async Task UpdateAccount(string email, CreateAccountDTO updateAccountDTO)
+        //{
+        //    Account updateAccount = await _accountRepository.getAccountEntityByEmail(email);
+        //    if (updateAccount == null)
+        //    {
+        //        throw new Exception("Account does not exist!");
+        //    }
+
+        //    updateAccount.Avatar = updateAccountDTO.Avatar;
+        //    updateAccount.PhoneNumber = updateAccountDTO.PhoneNumber;
+        //    updateAccount.Name = updateAccountDTO.Name;
+        //    updateAccount.DateOfBirth = DateOnly.FromDateTime(updateAccountDTO.DateOfBirth);
+        //    updateAccount.UpdatedAt = DateTime.Now;
+        //    updateAccount.Password = updateAccountDTO.Password;
+        //    updateAccount.Role = updateAccountDTO.Role;
+
+        //    await _accountRepository.SaveAccount(updateAccount);
+        //    List<Permit> permits = await PermissionsToPermits(updateAccountDTO.PermissionsIds, updateAccount);
+        //    updateAccount.Permits = permits;
+
+        //    await _accountRepository.UpdateAccount(updateAccount);
+        //}
     }
 }

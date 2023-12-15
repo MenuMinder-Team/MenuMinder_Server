@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BusinessObjects.DataModels;
 using BusinessObjects.DTO;
+using BusinessObjects.DTO.AccountDTO;
 
 namespace Repositories.Interfaces
 {

@@ -25,13 +25,15 @@ namespace Services
         private readonly ILogger<AuthService> _logger;
         private readonly IAccountRepository _accountRepository;
         private readonly JwtServices _jwtService;
+        private readonly PermissionService _permissionService;
 
-        public AuthService(ILogger<AuthService> logger, IMapper mapper, JwtServices jwtService, IAccountRepository accountRepository)
+        public AuthService(ILogger<AuthService> logger, IMapper mapper, JwtServices jwtService, IAccountRepository accountRepository, PermissionService permissionService )
         {
             this._logger = logger;
             this._mapper = mapper;
             this._accountRepository = accountRepository;
             this._jwtService = jwtService;
+            this._permissionService = permissionService;
         }
 
         public async Task<ResultLoginDto> loginWithEmailPassword(LoginDto dataLoginInvo)
@@ -63,8 +65,15 @@ namespace Services
                 // generate AccessToken JWT
                 string accessToken = _jwtService.GenerateToken(accountExistMap.AccountId.ToString(), accountExistMap.Email, accountExistMap.Role.ToString());
 
+                // get user Permissions
+                List<Permission> permissions = await _permissionService.GetPermissionsByUserId(accountExists.AccountId);
+
                 ResultLoginDto resultLogin = this._mapper.Map<GetAuthAccountDto, ResultLoginDto>(accountExistMap);
+
                 resultLogin.AccessToken = accessToken;
+                resultLogin.AccountId = accountExists.AccountId;
+                resultLogin.Permissions = permissions;
+
                 return resultLogin;
             }
             catch (BadRequestException ex)
@@ -80,13 +89,6 @@ namespace Services
                 this._logger.LogError(ex.ToString());
                 throw new Exception(ex.Message);
             }
-        }
-
-        public async Task<ResultValidateTokenDto> TestVerifyToken(string token)
-        {
-            ResultValidateTokenDto data = this._jwtService.VerifyToken(token);
-
-            return data;
         }
     }
 }

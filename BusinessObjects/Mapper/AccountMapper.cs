@@ -1,12 +1,12 @@
-﻿using System;
+﻿using AutoMapper;
+using BusinessObjects.DataModels;
+using BusinessObjects.DTO.AccountDTO;
+using BusinessObjects.DTO.AuthDTO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AutoMapper;
-using BusinessObjects.DataModels;
-using BusinessObjects.DTO.AccountDTO;
-using BusinessObjects.DTO.AuthDTO;
 
 namespace BusinessObjects.Mapper
 {

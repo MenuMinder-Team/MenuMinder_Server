@@ -5,6 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using BusinessObjects.DataModels;
+using BusinessObjects.DTO;
+using BusinessObjects.DTO.AccountDTO;
+using BusinessObjects.DTO.CategoryDTO;
+using BusinessObjects.Enum;
 using Microsoft.EntityFrameworkCore;
 using Repositories.Interfaces;
 
@@ -33,5 +37,28 @@ namespace Repositories.Implementations
             await this._context.SaveChangesAsync();
             return accountData;
         }
+
+        //public async Task<List<ResultAccountDTO>> getAllAccounts()
+        //{
+        //    List<ResultAccountDTO> data = new List<ResultAccountDTO>();
+        //    try
+        //    {
+        //        data = await _context.Accounts
+        //            .Select(account => _mapper.Map<ResultAccountDTO>(account)).ToListAsync();
+
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        throw new Exception(e.Message);
+        //    }
+
+        //    return data;
+        //}
+
+        //public async Task UpdateAccount(Account account)
+        //{
+        //    this._context.Update(account);
+        //    await this._context.SaveChangesAsync();
+        //}
     }
 }
