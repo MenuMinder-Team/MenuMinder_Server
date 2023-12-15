@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Services.Exceptions;
 
 namespace Services
 {
@@ -27,112 +28,101 @@ namespace Services
             this._permitRepository = permitRepository;
         }
 
-        public async Task<List<Permit>> PermissionsToPermits(List<int> permissionIds , Account account)
-        {
-            await _permitRepository.DeletePermitByUserId(account.AccountId);
-
-            List<Permit> result = new List<Permit>();
-
-            foreach (int permissionId in permissionIds)
-            {
-                Permit permit = new Permit();
-                permit.PermissionId = permissionId;
-                permit.AccountId = account.AccountId;
-
-                await _permitRepository.SavePermit(permit);
-
-                result.Add(permit);
-            }
-
-            return result;
-        }
-
-        public async Task<ResultAccountDTO> GetAccountByEmail(string email)
-        {
-            return await _accountRepository.getAccountByEmail(email);
-        }
-        
-        public async Task<Account> GetAccountEntityByEmail(string email)
-        {
-            return await _accountRepository.getAccountEntityByEmail(email);
-        }
-
-        public async Task CreateNewAccount(CreateAccountDTO createAccountDTO)
+        public async Task<ResultAccountDTO> createAccount(CreateAccountDto dataInvo)
         {
             try
             {
-                Account existedAccount = await _accountRepository.getAccountEntityByEmail(createAccountDTO.Email);
-                if (existedAccount != null)
+                // account create data
+                Account accountCreate = new Account();
+                accountCreate.Email = dataInvo.Email;
+                accountCreate.Password = dataInvo.Password;
+                accountCreate.Gender = dataInvo.Gender;
+                accountCreate.Name = dataInvo.Name;
+                accountCreate.PhoneNumber = dataInvo.PhoneNumber;
+
+                // check Account already exists
+                Account? isExistAcccount = await this._accountRepository.getAccountByEmail(accountCreate.Email);
+                if (isExistAcccount != null)
                 {
-                    throw new Exception("Account existed!");
+                    throw new BadRequestException("Email already exists.");
                 }
 
-                Account createAccount = new Account();
+                // create account
+                Account accountQuery = await this._accountRepository.SaveAccount(accountCreate);
+                ResultAccountDTO accountResult = this._mapper.Map<Account, ResultAccountDTO>(accountQuery);
+                // list permission id
+                if (dataInvo?.PermissionIds != null && dataInvo.PermissionIds.Length > 0)
+                {
+                    // create account permission
+                    Permit[] permitCreates = dataInvo.PermissionIds.Select(id => new Permit { PermissionId = id, AccountId = accountQuery.AccountId }).ToArray();
+                    await this._permitRepository.createBulkPermits(permitCreates);
+                    accountResult.PermissionIds = dataInvo.PermissionIds;
+                };
 
-                createAccount.Avatar = createAccountDTO.Avatar;
-                createAccount.PhoneNumber = createAccountDTO.PhoneNumber;
-                createAccount.Name = createAccountDTO.Name;
-                createAccount.DateOfBirth = DateOnly.FromDateTime(createAccountDTO.DateOfBirth);
-                createAccount.CreatedAt = DateTime.Now;
-                createAccount.UpdatedAt = DateTime.Now;
-                createAccount.IsBlock = false;
-                createAccount.Email = createAccountDTO.Email;
-                createAccount.Password = createAccountDTO.Password;
-                createAccount.Role = createAccountDTO.Role;
-
-                await _accountRepository.SaveAccount(createAccount);
-                List<Permit> permits = await PermissionsToPermits(createAccountDTO.PermissionsIds, createAccount);
-                createAccount.Permits = permits;
-
-                await _accountRepository.UpdateAccount(createAccount);
+                return accountResult;
             }
-            catch(Exception e)
+            catch (BadRequestException ex)
             {
-                _logger.LogError(e.Message);
-                throw;
+                throw ex;
             }
-        }
-
-        public async Task<List<ResultAccountDTO>> GetAllAccounts()
-        {
-            return await _accountRepository.getAllAccounts();
-        }
-
-        public async Task UpdateAccount(string email, CreateAccountDTO updateAccountDTO)
-        {
-            Account updateAccount = await _accountRepository.getAccountEntityByEmail(email);
-            if (updateAccount == null)
+            catch (UnauthorizedException ex)
             {
-                throw new Exception("Account does not exist!");
+                throw ex;
             }
-
-            updateAccount.Avatar = updateAccountDTO.Avatar;
-            updateAccount.PhoneNumber = updateAccountDTO.PhoneNumber;
-            updateAccount.Name = updateAccountDTO.Name;
-            updateAccount.DateOfBirth = DateOnly.FromDateTime(updateAccountDTO.DateOfBirth);
-            updateAccount.UpdatedAt = DateTime.Now;
-            updateAccount.Password = updateAccountDTO.Password;
-            updateAccount.Role = updateAccountDTO.Role;
-
-            await _accountRepository.SaveAccount(updateAccount);
-            List<Permit> permits = await PermissionsToPermits(updateAccountDTO.PermissionsIds, updateAccount);
-            updateAccount.Permits = permits;
-
-            await _accountRepository.UpdateAccount(updateAccount);
-        }
-
-        public async Task DeleteAccount(string email)
-        {
-            Account account = await this.GetAccountEntityByEmail(email);
-
-            if (account == null)
+            catch (Exception ex)
             {
-                throw new Exception("Account does not exist");
+                this._logger.LogError(ex.ToString());
+                throw new Exception(ex.Message);
             }
-
-            account.IsBlock = true;
-
-            await _accountRepository.UpdateAccount(account);
         }
+
+        //public async Task<List<Permit>> PermissionsToPermits(List<int> permissionIds , Account account)
+        //{
+        //    await _permitRepository.DeletePermitByUserId(account.AccountId);
+
+        //    List<Permit> result = new List<Permit>();
+
+        //    foreach (int permissionId in permissionIds)
+        //    {
+        //        Permit permit = new Permit();
+        //        permit.PermissionId = permissionId;
+        //        permit.AccountId = account.AccountId;
+
+        //        await _permitRepository.SavePermit(permit);
+
+        //        result.Add(permit);
+        //    }
+
+        //    return result;
+        //}
+
+
+        //public async Task<List<ResultAccountDTO>> GetAllAccounts()
+        //{
+        //    return await _accountRepository.getAllAccounts();
+        //}
+
+        //public async Task UpdateAccount(string email, CreateAccountDTO updateAccountDTO)
+        //{
+        //    Account updateAccount = await _accountRepository.getAccountEntityByEmail(email);
+        //    if (updateAccount == null)
+        //    {
+        //        throw new Exception("Account does not exist!");
+        //    }
+
+        //    updateAccount.Avatar = updateAccountDTO.Avatar;
+        //    updateAccount.PhoneNumber = updateAccountDTO.PhoneNumber;
+        //    updateAccount.Name = updateAccountDTO.Name;
+        //    updateAccount.DateOfBirth = DateOnly.FromDateTime(updateAccountDTO.DateOfBirth);
+        //    updateAccount.UpdatedAt = DateTime.Now;
+        //    updateAccount.Password = updateAccountDTO.Password;
+        //    updateAccount.Role = updateAccountDTO.Role;
+
+        //    await _accountRepository.SaveAccount(updateAccount);
+        //    List<Permit> permits = await PermissionsToPermits(updateAccountDTO.PermissionsIds, updateAccount);
+        //    updateAccount.Permits = permits;
+
+        //    await _accountRepository.UpdateAccount(updateAccount);
+        //}
     }
 }

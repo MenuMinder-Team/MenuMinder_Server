@@ -61,7 +61,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 
-// builder.Services.AddScoped<GlobalExceptionMiddleware>();
+builder.Services.AddScoped<GlobalExceptionMiddleware>();
+builder.Services.AddTransient<TokenValidationMiddleware>();
 
 // configure DI for application repositories
 builder.Services.AddScoped<DiningTableRepository, DiningTableRepository>();
@@ -105,8 +106,9 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<TokenValidationMiddleware>();
 
-//app.UseMiddleware<GlobalExceptionMiddleware>();
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.MapControllers();
 

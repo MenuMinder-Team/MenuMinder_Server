@@ -9,6 +9,7 @@ namespace Repositories.Interfaces
 {
     public interface IPermitRepository
     {
+        public Task createBulkPermits(Permit[] permits);
         public Task SavePermit(Permit permit);
         public Task<List<Permit>> GetPermitsByUserId(Guid userId);
         public Task DeletePermitByUserId(Guid userId);

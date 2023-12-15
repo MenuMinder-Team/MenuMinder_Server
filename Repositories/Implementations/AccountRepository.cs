@@ -25,48 +25,40 @@ namespace Repositories.Implementations
             this._mapper = mapper;
         }
 
-        public async Task<ResultAccountDTO> getAccountByEmail(string email)
+        public async Task<Account> getAccountByEmail(string email)
         {
-            Account account = await this.getAccountEntityByEmail(email);
-
-            ResultAccountDTO result = _mapper.Map<ResultAccountDTO>(account);
-
-            return result;
-        }
-
-        public async Task<Account> getAccountEntityByEmail(string email)
-        {
-            Account account = await this._context.Accounts.FirstOrDefaultAsync(e => e.Email == email);
+            Account? account = await this._context.Accounts.FirstOrDefaultAsync(e => e.Email == email);
             return account;
         }
 
-        public async Task<List<ResultAccountDTO>> getAllAccounts()
+        public async Task<Account> SaveAccount(Account accountData)
         {
-            List<ResultAccountDTO> data = new List<ResultAccountDTO>();
-            try
-            {
-                data = await _context.Accounts
-                    .Select(account => _mapper.Map<ResultAccountDTO>(account)).ToListAsync();
-
-            }
-            catch (Exception e)
-            {
-                throw new Exception(e.Message);
-            }
-
-            return data;
-        }
-
-        public async Task SaveAccount(Account account)
-        {
-            this._context.Add(account);
+            this._context.Accounts.Add(accountData);
             await this._context.SaveChangesAsync();
+            return accountData;
         }
 
-        public async Task UpdateAccount(Account account)
-        {
-            this._context.Update(account);
-            await this._context.SaveChangesAsync();
-        }
+        //public async Task<List<ResultAccountDTO>> getAllAccounts()
+        //{
+        //    List<ResultAccountDTO> data = new List<ResultAccountDTO>();
+        //    try
+        //    {
+        //        data = await _context.Accounts
+        //            .Select(account => _mapper.Map<ResultAccountDTO>(account)).ToListAsync();
+
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        throw new Exception(e.Message);
+        //    }
+
+        //    return data;
+        //}
+
+        //public async Task UpdateAccount(Account account)
+        //{
+        //    this._context.Update(account);
+        //    await this._context.SaveChangesAsync();
+        //}
     }
 }

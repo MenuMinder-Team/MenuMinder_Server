@@ -4,11 +4,11 @@ using BusinessObjects.Enum;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Repositories.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Repositories.Implementations
 {
@@ -24,6 +24,19 @@ namespace Repositories.Implementations
             this._mapper = mapper;
             this._logger = logger;
         }
+
+        public async Task createBulkPermits(Permit[] permits)
+        {
+            if (permits.Length > 0)
+            {
+                foreach (Permit permit in permits)
+                {
+                    this._context.Permits.Add(permit);
+                }
+                await this._context.SaveChangesAsync();
+            }
+        }
+        
 
         public async Task DeletePermitByUserId(Guid userId)
         {
