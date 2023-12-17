@@ -76,6 +76,19 @@ namespace Services
             }
         }
 
+        public async Task<List<AccountSuccinctDto>> getListStaffAccount ()
+        {
+            try
+            {
+                List<AccountSuccinctDto> accounts = await this._accountRepository.findAllStaffAccount();
+                return accounts;
+            }catch (Exception ex)
+            {
+                this._logger.LogError(ex.ToString());
+                throw new Exception(ex.Message);
+            }
+        }
+
         //public async Task<List<Permit>> PermissionsToPermits(List<int> permissionIds , Account account)
         //{
         //    await _permitRepository.DeletePermitByUserId(account.AccountId);

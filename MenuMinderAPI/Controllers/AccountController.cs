@@ -46,5 +46,31 @@ namespace MenuMinderAPI.Controllers
 
             return Ok(response);
         }
+
+        // GET: api/accounts/all
+        [HttpGet("all")]
+        public async Task<ActionResult> GetAllAccount()
+        {
+            ClaimsPrincipal claimsPrincipal = HttpContext.User;
+            var userFromToken = new ResultValidateTokenDto
+            {
+                AccountId = HttpContext.User.FindFirstValue("AccountId"),
+                Email = HttpContext.User.FindFirstValue("Email"),
+                Role = HttpContext.User.FindFirstValue("Role"),
+            };
+
+            // Check ROLE
+            if (userFromToken.Role != EnumRole.ADMIN.ToString())
+            {
+                throw new UnauthorizedException("Only ADMIN have permission to access this resource.");
+            }
+
+            ApiResponse<List<AccountSuccinctDto>> response = new ApiResponse<List<AccountSuccinctDto>>();
+            List<AccountSuccinctDto> resultAccount = await this._accountService.getListStaffAccount();
+            response.data = resultAccount;
+            //response.message = "get all success.";
+
+            return Ok(response);
+        }
     }
 }

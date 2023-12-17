@@ -38,22 +38,22 @@ namespace Repositories.Implementations
             return accountData;
         }
 
-        //public async Task<List<ResultAccountDTO>> getAllAccounts()
-        //{
-        //    List<ResultAccountDTO> data = new List<ResultAccountDTO>();
-        //    try
-        //    {
-        //        data = await _context.Accounts
-        //            .Select(account => _mapper.Map<ResultAccountDTO>(account)).ToListAsync();
+        public async Task<List<AccountSuccinctDto>> findAllStaffAccount()
+        {
+            List<AccountSuccinctDto> data = new List<AccountSuccinctDto>();
+            try
+            {
+                data = await _context.Accounts
+                    .Select(account => _mapper.Map<AccountSuccinctDto>(account)).ToListAsync();
 
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        throw new Exception(e.Message);
-        //    }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
 
-        //    return data;
-        //}
+            return data;
+        }
 
         //public async Task UpdateAccount(Account account)
         //{
