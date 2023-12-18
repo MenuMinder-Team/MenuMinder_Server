@@ -39,12 +39,13 @@ namespace Repositories.Implementations
             return accountData;
         }
 
-        public async Task<List<AccountSuccinctDto>> findAllStaffAccount()
+        public async Task<List<AccountSuccinctDto>> findAllStaffAccount(string search = "")
         {
             List<AccountSuccinctDto> data = new List<AccountSuccinctDto>();
             try
             {
                 data = await _context.Accounts
+                    .Where(account => account.Name.Contains(search) || account.Email.Contains(search) || account.PhoneNumber.Contains(search))
                     .Select(account => _mapper.Map<AccountSuccinctDto>(account)).ToListAsync();
 
             }

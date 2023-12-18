@@ -50,7 +50,7 @@ namespace MenuMinderAPI.Controllers
 
         // GET: api/accounts/all
         [HttpGet("all")]
-        public async Task<ActionResult> GetAllAccount()
+        public async Task<ActionResult> GetAllAccount([FromQuery] string? search = "")
         {
             ClaimsPrincipal claimsPrincipal = HttpContext.User;
             var userFromToken = new ResultValidateTokenDto
@@ -67,7 +67,7 @@ namespace MenuMinderAPI.Controllers
             }
 
             ApiResponse<List<AccountSuccinctDto>> response = new ApiResponse<List<AccountSuccinctDto>>();
-            List<AccountSuccinctDto> resultAccount = await this._accountService.getListStaffAccount();
+            List<AccountSuccinctDto> resultAccount = await this._accountService.getListStaffAccount(search);
             response.data = resultAccount;
             //response.message = "get all success.";
 

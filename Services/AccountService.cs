@@ -78,11 +78,11 @@ namespace Services
             }
         }
 
-        public async Task<List<AccountSuccinctDto>> getListStaffAccount ()
+        public async Task<List<AccountSuccinctDto>> getListStaffAccount (string search)
         {
             try
             {
-                List<AccountSuccinctDto> accounts = await this._accountRepository.findAllStaffAccount();
+                List<AccountSuccinctDto> accounts = await this._accountRepository.findAllStaffAccount(search);
                 return accounts;
             }catch (Exception ex)
             {

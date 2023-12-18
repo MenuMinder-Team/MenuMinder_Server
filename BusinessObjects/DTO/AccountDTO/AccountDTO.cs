@@ -48,6 +48,7 @@ namespace BusinessObjects.DTO.AccountDTO
         public string Email { get; set; } = null!;
         public string Name { get; set; } = null!;
         public string? PhoneNumber { get; set; }
+        public bool IsBlock { get; set; }
         public string? Avatar { get; set; }
     }
 }
