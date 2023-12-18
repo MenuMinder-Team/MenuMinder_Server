@@ -66,7 +66,7 @@ namespace Services
                 string accessToken = _jwtService.GenerateToken(accountExistMap.AccountId.ToString(), accountExistMap.Email, accountExistMap.Role.ToString());
 
                 // get user Permissions
-                List<Permission> permissions = await _permissionService.GetPermissionsByUserId(accountExists.AccountId);
+                List<PermissonDto> permissions = await _permissionService.GetPermissionsByUserId(accountExists.AccountId);
 
                 ResultLoginDto resultLogin = this._mapper.Map<GetAuthAccountDto, ResultLoginDto>(accountExistMap);
 

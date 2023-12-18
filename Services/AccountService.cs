@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Services.Exceptions;
+using BusinessObjects.DTO.AuthDTO;
 
 namespace Services
 {
@@ -19,13 +20,15 @@ namespace Services
         private readonly ILogger<AuthService> _logger;
         private readonly IAccountRepository _accountRepository;
         private readonly IPermitRepository _permitRepository;
+        private readonly PermissionService _permissionService;
 
-        public AccountService(ILogger<AuthService> logger, IMapper mapper, JwtServices jwtService, IAccountRepository accountRepository, IPermitRepository permitRepository)
+        public AccountService(ILogger<AuthService> logger, IMapper mapper, JwtServices jwtService, IAccountRepository accountRepository, IPermitRepository permitRepository, PermissionService permissionService)
         {
             this._logger = logger;
             this._mapper = mapper;
             this._accountRepository = accountRepository;
             this._permitRepository = permitRepository;
+            this._permissionService = permissionService;
         }
 
         public async Task<ResultAccountDTO> createAccount(CreateAccountDto dataInvo)
@@ -56,7 +59,6 @@ namespace Services
                     // create account permission
                     Permit[] permitCreates = dataInvo.PermissionIds.Select(id => new Permit { PermissionId = id, AccountId = accountQuery.AccountId }).ToArray();
                     await this._permitRepository.createBulkPermits(permitCreates);
-                    accountResult.PermissionIds = dataInvo.PermissionIds;
                 };
 
                 return accountResult;
@@ -94,8 +96,9 @@ namespace Services
             try
             {
                 ResultAccountDTO? accountResult = await this._accountRepository.findAccountById(accountId);
-                List<int> permissionIds = await this._permitRepository.FindPermissions(accountId);
-                accountResult.PermissionIds = permissionIds.ToArray();
+                // get user Permissions
+                List<PermissonDto> permissionIds = await _permissionService.GetPermissionsByUserId(Guid.Parse(accountId));
+                accountResult.Permissions = permissionIds;
                 return accountResult;
             }
             catch (Exception ex)

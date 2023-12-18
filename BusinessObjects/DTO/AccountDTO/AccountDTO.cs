@@ -1,4 +1,5 @@
 ﻿using BusinessObjects.DataModels;
+using BusinessObjects.DTO.AuthDTO;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -35,7 +36,7 @@ namespace BusinessObjects.DTO.AccountDTO
         public string? Avatar { get; set; }
         public DateOnly? DateOfBirth { get; set; }
         public bool? IsBlock { get; set; }
-        public int[]? PermissionIds { get; set; } = Array.Empty<int>();
+        public List<PermissonDto> Permissions { get; set; } = null!;
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
     }
