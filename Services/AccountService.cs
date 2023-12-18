@@ -89,6 +89,22 @@ namespace Services
             }
         }
 
+        public async Task<ResultAccountDTO> getDetailAccount(string accountId)
+        {
+            try
+            {
+                ResultAccountDTO? accountResult = await this._accountRepository.findAccountById(accountId);
+                List<int> permissionIds = await this._permitRepository.FindPermissions(accountId);
+                accountResult.PermissionIds = permissionIds.ToArray();
+                return accountResult;
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex.ToString());
+                throw new Exception(ex.Message);
+            }
+        }
+
         //public async Task<List<Permit>> PermissionsToPermits(List<int> permissionIds , Account account)
         //{
         //    await _permitRepository.DeletePermitByUserId(account.AccountId);
@@ -109,11 +125,6 @@ namespace Services
         //    return result;
         //}
 
-
-        //public async Task<List<ResultAccountDTO>> GetAllAccounts()
-        //{
-        //    return await _accountRepository.getAllAccounts();
-        //}
 
         //public async Task UpdateAccount(string email, CreateAccountDTO updateAccountDTO)
         //{

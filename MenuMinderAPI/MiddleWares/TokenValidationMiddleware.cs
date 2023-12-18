@@ -85,7 +85,7 @@ namespace MenuMinderAPI.MiddleWares
             {
                 { "/api/auth/test-verify-token", "POST" },
                 { "/api/accounts/create", "POST" },
-                { "/api/accounts/all", "GET" },
+                { "/api/accounts", "GET" },
             };
             // get information of request
             var requestPath = context.Request.Path;

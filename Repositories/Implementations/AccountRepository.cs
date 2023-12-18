@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using BusinessObjects.DataModels;
 using BusinessObjects.DTO;
 using BusinessObjects.DTO.AccountDTO;
@@ -52,6 +53,23 @@ namespace Repositories.Implementations
                 throw new Exception(e.Message);
             }
 
+            return data;
+        }
+
+        public async Task<ResultAccountDTO> findAccountById(string accountId)
+        {
+            ResultAccountDTO? data = new ResultAccountDTO();
+            try
+            {
+                data = await this._context.Accounts
+                    .Where(account => account.AccountId.ToString() == accountId)
+                    .Select(account => _mapper.Map<ResultAccountDTO>(account))
+                    .FirstOrDefaultAsync(); 
+            }
+            catch(Exception e)
+            {
+                throw new Exception(e.Message);
+            }
             return data;
         }
 

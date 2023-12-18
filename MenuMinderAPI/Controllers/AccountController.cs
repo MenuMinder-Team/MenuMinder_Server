@@ -7,6 +7,7 @@ using MenuMinderAPI.MiddleWares;
 using System.Security.Claims;
 using BusinessObjects.Enum;
 using Services.Exceptions;
+using BusinessObjects.DataModels;
 
 namespace MenuMinderAPI.Controllers
 {
@@ -69,6 +70,31 @@ namespace MenuMinderAPI.Controllers
             List<AccountSuccinctDto> resultAccount = await this._accountService.getListStaffAccount();
             response.data = resultAccount;
             //response.message = "get all success.";
+
+            return Ok(response);
+        }
+
+        // GET: api/accounts/:accountId
+        [HttpGet("{accountId}")]
+        public async Task<ActionResult> GetDetailAccount(string accountId)
+        {
+            ClaimsPrincipal claimsPrincipal = HttpContext.User;
+            var userFromToken = new ResultValidateTokenDto
+            {
+                AccountId = HttpContext.User.FindFirstValue("AccountId"),
+                Email = HttpContext.User.FindFirstValue("Email"),
+                Role = HttpContext.User.FindFirstValue("Role"),
+            };
+
+            // Check ROLE
+            if (userFromToken.Role != EnumRole.ADMIN.ToString())
+            {
+                throw new UnauthorizedException("Only ADMIN have permission to access this resource.");
+            }
+
+            ApiResponse<ResultAccountDTO> response = new ApiResponse<ResultAccountDTO>();
+            ResultAccountDTO resultAccount = await this._accountService.getDetailAccount(accountId);
+            response.data = resultAccount;
 
             return Ok(response);
         }

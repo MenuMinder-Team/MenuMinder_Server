@@ -36,7 +36,19 @@ namespace Repositories.Implementations
                 await this._context.SaveChangesAsync();
             }
         }
-        
+
+        public async Task<List<int>> FindPermissions(string accountID)
+        {
+            var data = await this._context.Permits.Where(p => p.AccountId.ToString() == accountID)
+                .Select(p => new
+                {
+                    p.Permission.PermissionId
+                }).ToListAsync();
+
+            List<int> permissionIds = data.Select(permission =>  permission.PermissionId).ToList();
+            return permissionIds;
+        }
+
 
         public async Task DeletePermitByUserId(Guid userId)
         {
