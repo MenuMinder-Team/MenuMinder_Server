@@ -6,6 +6,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 using Services.Exceptions;
+using BusinessObjects.DataModels;
 
 namespace MenuMinderAPI.Controllers
 {
@@ -16,10 +17,31 @@ namespace MenuMinderAPI.Controllers
     public class MeController : Controller
     {
         private readonly MeService _meService;
+        private readonly AccountService _accountService;
 
-        public MeController(MeService meService)
+        public MeController(MeService meService, AccountService accountService)
         {
             this._meService = meService;
+            this._accountService = accountService;
+        }
+
+        // GET: api/me/my-account
+        [HttpGet("my-account")] 
+        public async Task<ActionResult> GetMyAccount ()
+        {
+            ClaimsPrincipal claimsPrincipal = HttpContext.User;
+            var userFromToken = new ResultValidateTokenDto
+            {
+                AccountId = HttpContext.User.FindFirstValue("AccountId"),
+                Email = HttpContext.User.FindFirstValue("Email"),
+                Role = HttpContext.User.FindFirstValue("Role"),
+            };
+
+            ApiResponse<Account> response = new ApiResponse<Account>();
+            Account accountResult = await this._accountService.getAccountToUpdate(userFromToken.AccountId);
+            response.data = accountResult;
+
+            return Ok(response);
         }
 
         // PUT: api/me/update-password
