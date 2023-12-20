@@ -173,5 +173,26 @@ namespace Services
                 throw new Exception(ex.Message);
             }
         }
+
+        public async Task updateAccountPermits(string AccountId, List<int> permitListId)
+        {
+            // get list exists permissionId of Account
+            List<int> existPermitIds = await this._permitRepository.getPermitIdsOfAccount(AccountId);
+
+            // handle permit delete and create
+            List<int> permissionDeleteIds;
+            List<int> permissionCreateIds;
+            if (permitListId.Count > 0)
+            {
+                permissionDeleteIds = existPermitIds.Except(permitListId).ToList(); 
+                permissionCreateIds = permitListId.Except(existPermitIds).ToList();
+                // create new account permission
+                Permit[] permitCreates = permissionCreateIds.Select(id => new Permit { PermissionId = id, AccountId = Guid.Parse(AccountId) }).ToArray();
+                await this._permitRepository.createBulkPermits(permitCreates);
+                // delete account permission
+                await this._permitRepository.deleteManyPermits(AccountId, permissionDeleteIds);
+            }
+
+        }
     }
 }

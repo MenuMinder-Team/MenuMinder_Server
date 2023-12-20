@@ -8,6 +8,7 @@ using System.Security.Claims;
 using BusinessObjects.Enum;
 using Services.Exceptions;
 using BusinessObjects.DataModels;
+using BusinessObjects.DTO.PermitDTO;
 
 namespace MenuMinderAPI.Controllers
 {
@@ -120,6 +121,30 @@ namespace MenuMinderAPI.Controllers
             ApiResponse<ResultAccountDTO> response = new ApiResponse<ResultAccountDTO>();
             await this._accountService.UpdateAccount(accountId, accountInvo);
             response.message = "update account success";
+
+            return Ok(response);
+        }
+
+        [HttpPut("permits/{accountId}")]
+        public async Task<ActionResult> UpdatePermits(string AccountId, [FromBody] UpdatePermitAccountDto dataInvo)
+        {
+            ClaimsPrincipal claimsPrincipal = HttpContext.User;
+            var userFromToken = new ResultValidateTokenDto
+            {
+                AccountId = HttpContext.User.FindFirstValue("AccountId"),
+                Email = HttpContext.User.FindFirstValue("Email"),
+                Role = HttpContext.User.FindFirstValue("Role"),
+            };
+
+            // Check ROLE
+            if (userFromToken.Role != EnumRole.ADMIN.ToString())
+            {
+                throw new UnauthorizedException("Only ADMIN have permission to access this resource.");
+            }
+
+            ApiResponse<string> response = new ApiResponse<string>();
+            await this._accountService.updateAccountPermits(AccountId, dataInvo.permissionIds);
+            response.message = "update permission for account success";
 
             return Ok(response);
         }
