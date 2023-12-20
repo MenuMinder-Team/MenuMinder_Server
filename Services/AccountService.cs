@@ -108,6 +108,20 @@ namespace Services
             }
         }
 
+        public async Task<Account> getAccountToUpdate(string accountId)
+        {
+            try
+            {
+                Account? accountResult = await this._accountRepository.findAccountToUpdateById(accountId);
+                return accountResult;
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex.ToString());
+                throw new Exception(ex.Message);
+            }
+        }
+
         //public async Task<List<Permit>> PermissionsToPermits(List<int> permissionIds , Account account)
         //{
         //    await _permitRepository.DeletePermitByUserId(account.AccountId);
@@ -129,27 +143,35 @@ namespace Services
         //}
 
 
-        //public async Task UpdateAccount(string email, CreateAccountDTO updateAccountDTO)
-        //{
-        //    Account updateAccount = await _accountRepository.getAccountEntityByEmail(email);
-        //    if (updateAccount == null)
-        //    {
-        //        throw new Exception("Account does not exist!");
-        //    }
+        public async Task UpdateAccount(string accountId, UpdateAccountDto updateAccountDTO)
+        {
+            try
+            {
+                Account existAccount = await this.getAccountToUpdate(accountId);
+                if (existAccount == null)
+                {
+                    throw new BadRequestException("Account does not exist!");
+                }
+                    existAccount.Avatar = updateAccountDTO?.Avatar ?? existAccount.Avatar;
+                    existAccount.PhoneNumber = updateAccountDTO?.PhoneNumber ?? existAccount.PhoneNumber;
+                    existAccount.Name = updateAccountDTO?.Name ?? existAccount.Name;
+                    existAccount.Gender = updateAccountDTO?.Gender ?? existAccount.Gender;
+                    existAccount.DateOfBirth = updateAccountDTO?.DateOfBirth ?? existAccount.DateOfBirth;
+                    existAccount.IsBlock = updateAccountDTO?.IsBlock ?? existAccount.IsBlock;
+                    existAccount.UpdatedAt = DateTime.Now;
 
-        //    updateAccount.Avatar = updateAccountDTO.Avatar;
-        //    updateAccount.PhoneNumber = updateAccountDTO.PhoneNumber;
-        //    updateAccount.Name = updateAccountDTO.Name;
-        //    updateAccount.DateOfBirth = DateOnly.FromDateTime(updateAccountDTO.DateOfBirth);
-        //    updateAccount.UpdatedAt = DateTime.Now;
-        //    updateAccount.Password = updateAccountDTO.Password;
-        //    updateAccount.Role = updateAccountDTO.Role;
-
-        //    await _accountRepository.SaveAccount(updateAccount);
-        //    List<Permit> permits = await PermissionsToPermits(updateAccountDTO.PermissionsIds, updateAccount);
-        //    updateAccount.Permits = permits;
-
-        //    await _accountRepository.UpdateAccount(updateAccount);
-        //}
+                if(existAccount != null)
+                    await _accountRepository.UpdateAccount(existAccount);
+            }
+            catch (BadRequestException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex.ToString());
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }

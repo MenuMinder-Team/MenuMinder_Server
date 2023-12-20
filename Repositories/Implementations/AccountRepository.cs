@@ -39,6 +39,20 @@ namespace Repositories.Implementations
             return accountData;
         }
 
+        public async Task<Account> UpdateAccount(Account accountData)
+        {
+            try
+            {
+                this._context.Accounts.Update(accountData);
+                var data = await this._context.SaveChangesAsync();
+                return accountData;
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
         public async Task<List<AccountSuccinctDto>> findAllStaffAccount(string search = "")
         {
             List<AccountSuccinctDto> data = new List<AccountSuccinctDto>();
@@ -68,6 +82,22 @@ namespace Repositories.Implementations
                     .FirstOrDefaultAsync(); 
             }
             catch(Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return data;
+        }
+
+        public async Task<Account> findAccountToUpdateById(string accountId)
+        {
+            Account? data = new Account();
+            try
+            {
+                data = await this._context.Accounts
+                    .Where(account => account.AccountId.ToString() == accountId)
+                    .FirstOrDefaultAsync();
+            }
+            catch (Exception e)
             {
                 throw new Exception(e.Message);
             }

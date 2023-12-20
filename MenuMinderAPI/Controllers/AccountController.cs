@@ -98,5 +98,30 @@ namespace MenuMinderAPI.Controllers
 
             return Ok(response);
         }
+
+        // PUT: api/accounts/update/:accountId
+        [HttpPut("{accountId}")]
+        public async Task<ActionResult> UpdateAccount(string accountId, [FromBody] UpdateAccountDto accountInvo)
+        {
+            ClaimsPrincipal claimsPrincipal = HttpContext.User;
+            var userFromToken = new ResultValidateTokenDto
+            {
+                AccountId = HttpContext.User.FindFirstValue("AccountId"),
+                Email = HttpContext.User.FindFirstValue("Email"),
+                Role = HttpContext.User.FindFirstValue("Role"),
+            };
+
+            // Check ROLE
+            if (userFromToken.Role != EnumRole.ADMIN.ToString())
+            {
+                throw new UnauthorizedException("Only ADMIN have permission to access this resource.");
+            }
+
+            ApiResponse<ResultAccountDTO> response = new ApiResponse<ResultAccountDTO>();
+            await this._accountService.UpdateAccount(accountId, accountInvo);
+            response.message = "update account success";
+
+            return Ok(response);
+        }
     }
 }

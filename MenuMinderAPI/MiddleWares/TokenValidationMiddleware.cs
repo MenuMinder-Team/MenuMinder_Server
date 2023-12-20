@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using Services.Exceptions;
 using Services.Helpers;
 using System.Formats.Asn1;
+using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Text.Json;
@@ -81,11 +82,11 @@ namespace MenuMinderAPI.MiddleWares
         private bool IsRouteToBeHandled(HttpContext context)
         {
             // List path api want to apply middle ware
-            var targetRoutes = new Dictionary<string, string>
+            var targetRoutes = new Dictionary<string, List<string>>
             {
-                { "/api/auth/test-verify-token", "POST" },
-                { "/api/accounts/create", "POST" },
-                { "/api/accounts", "GET" },
+                { "/api/auth/test-verify-token", new List<string> {"POST" } },
+                { "/api/accounts/create", new List < string > { "POST" } },
+                { "/api/accounts", new List < string > { "GET", "PUT" } },
             };
             // get information of request
             var requestPath = context.Request.Path;
@@ -94,7 +95,7 @@ namespace MenuMinderAPI.MiddleWares
             // check paths is matching
             if (targetRoutes.Any(route =>
                 requestPath.StartsWithSegments(route.Key) &&
-                string.Equals(requestMethod, route.Value, StringComparison.OrdinalIgnoreCase)))
+                route.Value.Any(method => string.Equals(requestMethod, method, StringComparison.OrdinalIgnoreCase))))
             {
                 return true;
             }
