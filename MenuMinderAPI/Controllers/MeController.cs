@@ -56,9 +56,28 @@ namespace MenuMinderAPI.Controllers
                 Role = HttpContext.User.FindFirstValue("Role"),
             };
 
-            ApiResponse<ResultAccountDTO> response = new ApiResponse<ResultAccountDTO>();
+            ApiResponse<EmptyResult> response = new ApiResponse<EmptyResult>();
             await this._meService.updatePassword(userFromToken.AccountId, dataInvo);
             response.message = "Password has been updated.";
+
+            return Ok(response);
+        }
+
+        // PUT: api/me/update
+        [HttpPut("update")]
+        public async Task<ActionResult> UpdateMyAccount([FromBody] UpdateAccountDto dataInvo)
+        {
+            ClaimsPrincipal claimsPrincipal = HttpContext.User;
+            var userFromToken = new ResultValidateTokenDto
+            {
+                AccountId = HttpContext.User.FindFirstValue("AccountId"),
+                Email = HttpContext.User.FindFirstValue("Email"),
+                Role = HttpContext.User.FindFirstValue("Role"),
+            };
+
+            ApiResponse<EmptyResult> response = new ApiResponse<EmptyResult>();
+            await this._accountService.UpdateAccount(userFromToken.AccountId, dataInvo);
+            response.message = "Account has been updated.";
 
             return Ok(response);
         }
