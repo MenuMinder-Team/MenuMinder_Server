@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Services.Exceptions;
+using BusinessObjects.DTO.AuthDTO;
 
 namespace Services
 {
@@ -19,13 +20,15 @@ namespace Services
         private readonly ILogger<AuthService> _logger;
         private readonly IAccountRepository _accountRepository;
         private readonly IPermitRepository _permitRepository;
+        private readonly PermissionService _permissionService;
 
-        public AccountService(ILogger<AuthService> logger, IMapper mapper, JwtServices jwtService, IAccountRepository accountRepository, IPermitRepository permitRepository)
+        public AccountService(ILogger<AuthService> logger, IMapper mapper, JwtServices jwtService, IAccountRepository accountRepository, IPermitRepository permitRepository, PermissionService permissionService)
         {
             this._logger = logger;
             this._mapper = mapper;
             this._accountRepository = accountRepository;
             this._permitRepository = permitRepository;
+            this._permissionService = permissionService;
         }
 
         public async Task<ResultAccountDTO> createAccount(CreateAccountDto dataInvo)
@@ -56,7 +59,6 @@ namespace Services
                     // create account permission
                     Permit[] permitCreates = dataInvo.PermissionIds.Select(id => new Permit { PermissionId = id, AccountId = accountQuery.AccountId }).ToArray();
                     await this._permitRepository.createBulkPermits(permitCreates);
-                    accountResult.PermissionIds = dataInvo.PermissionIds;
                 };
 
                 return accountResult;
@@ -68,6 +70,54 @@ namespace Services
             catch (UnauthorizedException ex)
             {
                 throw ex;
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex.ToString());
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<List<AccountSuccinctDto>> getListStaffAccount (string search)
+        {
+            try
+            {
+                List<AccountSuccinctDto> accounts = await this._accountRepository.findAllStaffAccount(search);
+                return accounts;
+            }catch (Exception ex)
+            {
+                this._logger.LogError(ex.ToString());
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<ResultAccountDTO> getDetailAccount(string accountId)
+        {
+            try
+            {
+                ResultAccountDTO? accountResult = await this._accountRepository.findAccountById(accountId);
+                if (accountResult != null)
+                {
+                    // get user Permissions
+                    List<PermissonDto> permissionIds = await _permissionService.GetPermissionsByUserId(Guid.Parse(accountId));
+                    accountResult.Permissions = permissionIds;
+                    return accountResult;
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex.ToString());
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<Account> getAccountToUpdate(string accountId)
+        {
+            try
+            {
+                Account? accountResult = await this._accountRepository.findAccountToUpdateById(accountId);
+                return accountResult;
             }
             catch (Exception ex)
             {
@@ -97,32 +147,88 @@ namespace Services
         //}
 
 
-        //public async Task<List<ResultAccountDTO>> GetAllAccounts()
-        //{
-        //    return await _accountRepository.getAllAccounts();
-        //}
+        public async Task UpdateAccount(string accountId, UpdateAccountDto updateAccountDTO)
+        {
+            try
+            {
+                Account existAccount = await this.getAccountToUpdate(accountId);
+                if (existAccount == null)
+                {
+                    throw new BadRequestException("Account does not exist!");
+                }
+                    existAccount.Avatar = updateAccountDTO?.Avatar ?? existAccount.Avatar;
+                    existAccount.PhoneNumber = updateAccountDTO?.PhoneNumber ?? existAccount.PhoneNumber;
+                    existAccount.Name = updateAccountDTO?.Name ?? existAccount.Name;
+                    existAccount.Gender = updateAccountDTO?.Gender ?? existAccount.Gender;
+                    existAccount.DateOfBirth = updateAccountDTO?.DateOfBirth ?? existAccount.DateOfBirth;
+                    existAccount.IsBlock = updateAccountDTO?.IsBlock ?? existAccount.IsBlock;
+                    existAccount.UpdatedAt = DateTime.Now;
 
-        //public async Task UpdateAccount(string email, CreateAccountDTO updateAccountDTO)
-        //{
-        //    Account updateAccount = await _accountRepository.getAccountEntityByEmail(email);
-        //    if (updateAccount == null)
-        //    {
-        //        throw new Exception("Account does not exist!");
-        //    }
+                if(existAccount != null)
+                    await _accountRepository.UpdateAccount(existAccount);
+            }
+            catch (BadRequestException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex.ToString());
+                throw new Exception(ex.Message);
+            }
+        }
 
-        //    updateAccount.Avatar = updateAccountDTO.Avatar;
-        //    updateAccount.PhoneNumber = updateAccountDTO.PhoneNumber;
-        //    updateAccount.Name = updateAccountDTO.Name;
-        //    updateAccount.DateOfBirth = DateOnly.FromDateTime(updateAccountDTO.DateOfBirth);
-        //    updateAccount.UpdatedAt = DateTime.Now;
-        //    updateAccount.Password = updateAccountDTO.Password;
-        //    updateAccount.Role = updateAccountDTO.Role;
+        public async Task updateAccountPermits(string AccountId, List<int> permitListId)
+        {
+            try
+            {
+                // get list exists permissionId of Account
+                List<int> existPermitIds = await this._permitRepository.getPermitIdsOfAccount(AccountId);
 
-        //    await _accountRepository.SaveAccount(updateAccount);
-        //    List<Permit> permits = await PermissionsToPermits(updateAccountDTO.PermissionsIds, updateAccount);
-        //    updateAccount.Permits = permits;
+                // handle permit delete and create
+                List<int> permissionDeleteIds;
+                List<int> permissionCreateIds;
+                if (permitListId.Count > 0)
+                {
+                    permissionDeleteIds = existPermitIds.Except(permitListId).ToList();
+                    permissionCreateIds = permitListId.Except(existPermitIds).ToList();
+                    // create new account permission
+                    Permit[] permitCreates = permissionCreateIds.Select(id => new Permit { PermissionId = id, AccountId = Guid.Parse(AccountId) }).ToArray();
+                    await this._permitRepository.createBulkPermits(permitCreates);
+                    // delete account permission
+                    await this._permitRepository.deleteManyPermits(AccountId, permissionDeleteIds);
+                }
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex.ToString());
+                throw new Exception(ex.Message);
+            }
+        }
 
-        //    await _accountRepository.UpdateAccount(updateAccount);
-        //}
+        public async Task blockAccount(string accountId, Boolean isBlock)
+        {
+            try
+            {
+                await this._accountRepository.BlockAccount(accountId, isBlock);
+            }
+            catch(Exception ex) {
+                this._logger.LogError(ex.ToString());
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task deleteAccount(string accountId)
+        {
+            try
+            {
+                await this._accountRepository.DeleteAccount(accountId);
+            }
+            catch(Exception ex)
+            {
+                this._logger.LogError(ex.ToString());
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }

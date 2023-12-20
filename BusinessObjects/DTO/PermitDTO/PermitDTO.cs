@@ -15,4 +15,9 @@ namespace BusinessObjects.DTO.PermitDTO
         [Required(ErrorMessage = "AccountId is required")]
         public Guid AccountId { get; set; }
     }
+
+    public record UpdatePermitAccountDto {
+        [Required(ErrorMessage = "permissionIds is required")]
+        public List<int>? permissionIds { get; set; }
+    }
 }

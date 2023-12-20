@@ -15,6 +15,7 @@ namespace BusinessObjects.Mapper
         public AccountMapper()
         {
             CreateMap<Account, ResultAccountDTO>();
+            CreateMap<Account, AccountSuccinctDto>();
         }
     }
 }

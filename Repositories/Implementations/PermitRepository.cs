@@ -36,7 +36,19 @@ namespace Repositories.Implementations
                 await this._context.SaveChangesAsync();
             }
         }
-        
+
+        public async Task<List<int>> FindPermissions(string accountID)
+        {
+            var data = await this._context.Permits.Where(p => p.AccountId.ToString() == accountID)
+                .Select(p => new
+                {
+                    p.Permission.PermissionId
+                }).ToListAsync();
+
+            List<int> permissionIds = data.Select(permission =>  permission.PermissionId).ToList();
+            return permissionIds;
+        }
+
 
         public async Task DeletePermitByUserId(Guid userId)
         {
@@ -73,6 +85,40 @@ namespace Repositories.Implementations
             catch (Exception e)
             {
                 _logger.LogError(e.ToString());
+                throw;
+            }
+        }
+        public async Task deleteManyPermits(string accountId, List<int> permissionId)
+        {
+            try
+            {
+                var permissionDeletes = await this._context.Permits.Where(p =>
+                p.AccountId == Guid.Parse(accountId)
+                && permissionId.Contains(p.PermissionId)
+                ).ToListAsync();
+
+                this._context.RemoveRange(permissionDeletes);
+                await this._context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
+                throw;
+            }
+        }
+
+        public async Task<List<int>> getPermitIdsOfAccount(string accountId)
+        {
+            try
+            {
+                List<int> permitIds = await this._context.Permits.Where(p => p.AccountId.ToString() == accountId)
+                    .Select(p => p.Permission.PermissionId)
+                    .ToListAsync();
+                return permitIds;
+            }
+            catch (Exception e)
+            {
+                this._logger.LogError(e.Message);
                 throw;
             }
         }

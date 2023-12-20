@@ -13,5 +13,11 @@ namespace Repositories.Interfaces
     {
         public Task<Account> getAccountByEmail(string email);
         public Task<Account> SaveAccount(Account accountData);
+        public Task<Account> UpdateAccount(Account accountData);
+        public Task<List<AccountSuccinctDto>> findAllStaffAccount(string search);
+        public Task<ResultAccountDTO> findAccountById(string accountId);
+        public Task<Account> findAccountToUpdateById(string accountId);
+        public Task BlockAccount(string accountId, Boolean isBlock);
+        public Task DeleteAccount(string accountId);
     }
 }
