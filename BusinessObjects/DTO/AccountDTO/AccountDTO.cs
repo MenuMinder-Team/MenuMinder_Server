@@ -71,4 +71,15 @@ namespace BusinessObjects.DTO.AccountDTO
         [Required(ErrorMessage = "isBlock is required")]
         public Boolean isBlock { get; set; }
     }
+
+    public record UpdatePasswordDto
+    {
+        [Required(ErrorMessage = "password is required")]
+        public string? password { get; set; }
+
+        [Required(ErrorMessage = "new password is required")]
+        [MinLength(6, ErrorMessage = "Password must be at least 6 characters")]
+        [MaxLength(20, ErrorMessage = "Password cannot exceed 20 characters")]
+        public string? newPassword { get; set; }
+    }
 }
