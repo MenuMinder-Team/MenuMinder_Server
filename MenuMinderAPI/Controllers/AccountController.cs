@@ -148,5 +148,53 @@ namespace MenuMinderAPI.Controllers
 
             return Ok(response);
         }
+
+        [HttpDelete("block/{accountId}")]
+        public async Task<ActionResult> BlockAccount(string accountId, [FromQuery] BlockAccountDto dataInvo)
+        {
+            ClaimsPrincipal claimsPrincipal = HttpContext.User;
+            var userFromToken = new ResultValidateTokenDto
+            {
+                AccountId = HttpContext.User.FindFirstValue("AccountId"),
+                Email = HttpContext.User.FindFirstValue("Email"),
+                Role = HttpContext.User.FindFirstValue("Role"),
+            };
+
+            // Check ROLE
+            if (userFromToken.Role != EnumRole.ADMIN.ToString())
+            {
+                throw new UnauthorizedException("Only ADMIN have permission to access this resource.");
+            }
+
+            ApiResponse<string> response = new ApiResponse<string>();
+            await this._accountService.blockAccount(accountId, dataInvo.isBlock);
+            response.message = "Account has been locked!";
+
+            return Ok(response);
+        }
+
+        [HttpDelete("delete/{accountId}")]
+        public async Task<ActionResult> DeleteBlockAccount(string accountId)
+        {
+            ClaimsPrincipal claimsPrincipal = HttpContext.User;
+            var userFromToken = new ResultValidateTokenDto
+            {
+                AccountId = HttpContext.User.FindFirstValue("AccountId"),
+                Email = HttpContext.User.FindFirstValue("Email"),
+                Role = HttpContext.User.FindFirstValue("Role"),
+            };
+
+            // Check ROLE
+            if (userFromToken.Role != EnumRole.ADMIN.ToString())
+            {
+                throw new UnauthorizedException("Only ADMIN have permission to access this resource.");
+            }
+
+            ApiResponse<string> response = new ApiResponse<string>();
+            await this._accountService.deleteAccount(accountId);
+            response.message = "Account has been Deleted!";
+
+            return Ok(response);
+        }
     }
 }

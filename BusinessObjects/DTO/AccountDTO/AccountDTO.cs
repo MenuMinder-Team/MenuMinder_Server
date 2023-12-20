@@ -65,4 +65,10 @@ namespace BusinessObjects.DTO.AccountDTO
         public bool IsBlock { get; set; }
         public string? Avatar { get; set; }
     }
+
+    public record BlockAccountDto
+    {
+        [Required(ErrorMessage = "isBlock is required")]
+        public Boolean isBlock { get; set; }
+    }
 }

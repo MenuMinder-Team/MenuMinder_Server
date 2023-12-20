@@ -104,10 +104,39 @@ namespace Repositories.Implementations
             return data;
         }
 
-        //public async Task UpdateAccount(Account account)
-        //{
-        //    this._context.Update(account);
-        //    await this._context.SaveChangesAsync();
-        //}
+        public async Task BlockAccount(string accountId, Boolean isBlock)
+        {
+            try
+            {
+                Account accountBlock = await this._context.Accounts.FirstOrDefaultAsync(a => a.AccountId.ToString() == accountId);
+                if(accountBlock != null)
+                {
+                    accountBlock.IsBlock = isBlock;
+                    this._context.Accounts.Update(accountBlock);
+                    await this._context.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task DeleteAccount(string accountId)
+        {
+            try
+            {
+                Account accountDelete = await this._context.Accounts.FirstOrDefaultAsync(a => a.AccountId.ToString() == accountId);
+                if(accountDelete != null)
+                {
+                    this._context.Accounts.Remove(accountDelete);
+                    await this._context.SaveChangesAsync();
+                }
+            }
+            catch  (Exception ex) 
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }

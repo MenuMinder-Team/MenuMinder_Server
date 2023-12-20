@@ -17,5 +17,7 @@ namespace Repositories.Interfaces
         public Task<List<AccountSuccinctDto>> findAllStaffAccount(string search);
         public Task<ResultAccountDTO> findAccountById(string accountId);
         public Task<Account> findAccountToUpdateById(string accountId);
+        public Task BlockAccount(string accountId, Boolean isBlock);
+        public Task DeleteAccount(string accountId);
     }
 }

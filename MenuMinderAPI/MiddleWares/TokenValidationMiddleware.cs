@@ -85,8 +85,8 @@ namespace MenuMinderAPI.MiddleWares
             var targetRoutes = new Dictionary<string, List<string>>
             {
                 { "/api/auth/test-verify-token", new List<string> {"POST" } },
-                { "/api/accounts/create", new List < string > { "POST" } },
-                { "/api/accounts", new List < string > { "GET", "PUT" } },
+                { "/api/accounts/create", new List <string> { "POST" } },
+                { "/api/accounts", new List <string> { "GET", "PUT", "DELETE" } },
             };
             // get information of request
             var requestPath = context.Request.Path;

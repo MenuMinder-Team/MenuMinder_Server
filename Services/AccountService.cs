@@ -96,10 +96,14 @@ namespace Services
             try
             {
                 ResultAccountDTO? accountResult = await this._accountRepository.findAccountById(accountId);
-                // get user Permissions
-                List<PermissonDto> permissionIds = await _permissionService.GetPermissionsByUserId(Guid.Parse(accountId));
-                accountResult.Permissions = permissionIds;
-                return accountResult;
+                if (accountResult != null)
+                {
+                    // get user Permissions
+                    List<PermissonDto> permissionIds = await _permissionService.GetPermissionsByUserId(Guid.Parse(accountId));
+                    accountResult.Permissions = permissionIds;
+                    return accountResult;
+                }
+                return null;
             }
             catch (Exception ex)
             {
@@ -176,23 +180,55 @@ namespace Services
 
         public async Task updateAccountPermits(string AccountId, List<int> permitListId)
         {
-            // get list exists permissionId of Account
-            List<int> existPermitIds = await this._permitRepository.getPermitIdsOfAccount(AccountId);
-
-            // handle permit delete and create
-            List<int> permissionDeleteIds;
-            List<int> permissionCreateIds;
-            if (permitListId.Count > 0)
+            try
             {
-                permissionDeleteIds = existPermitIds.Except(permitListId).ToList(); 
-                permissionCreateIds = permitListId.Except(existPermitIds).ToList();
-                // create new account permission
-                Permit[] permitCreates = permissionCreateIds.Select(id => new Permit { PermissionId = id, AccountId = Guid.Parse(AccountId) }).ToArray();
-                await this._permitRepository.createBulkPermits(permitCreates);
-                // delete account permission
-                await this._permitRepository.deleteManyPermits(AccountId, permissionDeleteIds);
-            }
+                // get list exists permissionId of Account
+                List<int> existPermitIds = await this._permitRepository.getPermitIdsOfAccount(AccountId);
 
+                // handle permit delete and create
+                List<int> permissionDeleteIds;
+                List<int> permissionCreateIds;
+                if (permitListId.Count > 0)
+                {
+                    permissionDeleteIds = existPermitIds.Except(permitListId).ToList();
+                    permissionCreateIds = permitListId.Except(existPermitIds).ToList();
+                    // create new account permission
+                    Permit[] permitCreates = permissionCreateIds.Select(id => new Permit { PermissionId = id, AccountId = Guid.Parse(AccountId) }).ToArray();
+                    await this._permitRepository.createBulkPermits(permitCreates);
+                    // delete account permission
+                    await this._permitRepository.deleteManyPermits(AccountId, permissionDeleteIds);
+                }
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex.ToString());
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task blockAccount(string accountId, Boolean isBlock)
+        {
+            try
+            {
+                await this._accountRepository.BlockAccount(accountId, isBlock);
+            }
+            catch(Exception ex) {
+                this._logger.LogError(ex.ToString());
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task deleteAccount(string accountId)
+        {
+            try
+            {
+                await this._accountRepository.DeleteAccount(accountId);
+            }
+            catch(Exception ex)
+            {
+                this._logger.LogError(ex.ToString());
+                throw new Exception(ex.Message);
+            }
         }
     }
 }
