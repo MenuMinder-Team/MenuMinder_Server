@@ -62,5 +62,16 @@ namespace MenuMinderAPI.Controllers
             response.data = reservationResults;
             return Ok(response);
         }
+
+        // PUT: api/reservations/update/{reservationId}
+        [HttpPut("update/{reservationId}")]
+        public async Task<ActionResult> UpdateReservation (int reservationId, [FromBody] UpdateReservationDto dataInvo)
+        {
+            ApiResponse<Reservation> response = new ApiResponse<Reservation>();
+            Reservation reservationResult = await this._reservationService.updateReservation(reservationId, dataInvo);
+            response.message = "Updated success";
+            response.data = reservationResult;
+            return Ok(response);
+        }
     }
 }

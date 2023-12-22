@@ -9,6 +9,7 @@ using BusinessObjects.DTO.ReservationDTO;
 using Microsoft.Extensions.Logging;
 using Repositories.Implementations;
 using Repositories.Interfaces;
+using Services.Exceptions;
 
 namespace Services
 {
@@ -34,7 +35,7 @@ namespace Services
                     CustomerName = dataInvo.CustomerName,
                     CustomerPhone = dataInvo.CustomerPhone,
                     Note = dataInvo.Note,
-                    ReservationTime = DateTime.Now,
+                    ReservationTime = DateTime.Parse(dataInvo.ReservationTime.ToString()),
                     NumberOfCustomer = dataInvo.NumberOfCustomer ?? 1,
                     CreatedBy = dataInvo.CreatedBy,
                     Status = dataInvo.Status
@@ -70,7 +71,45 @@ namespace Services
                 Reservation reservationResult = await this._reservationRepository.FindReservationById(reservationId);
                 return reservationResult;
             }
-            catch(Exception ex) {
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex.ToString());
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<Reservation> updateReservation(int reservationId, UpdateReservationDto reservationData)
+        {
+            try
+            {
+                Reservation dataExist = await this._reservationRepository.FindReservationById(reservationId);
+                if (dataExist == null)
+                {
+                    throw new NotFoundException($"Not found Reservation with Id = {reservationId}");
+                }
+
+                dataExist.CustomerName = reservationData?.CustomerName ?? dataExist.CustomerName;
+                dataExist.CustomerPhone = reservationData?.CustomerPhone ?? dataExist.CustomerPhone;
+                dataExist.NumberOfCustomer = reservationData?.NumberOfCustomer ?? (int)dataExist.NumberOfCustomer;
+                dataExist.Note = reservationData?.Note ?? dataExist.Note;
+                dataExist.Status = reservationData?.Status ?? dataExist.Status;
+                dataExist.UpdatedAt = DateTime.Now;
+                if(reservationData?.ReservationTime != null)
+                {
+                    dataExist.ReservationTime = DateTime.Parse(reservationData.ReservationTime.ToString());
+                }
+
+                await this._reservationRepository.UpdateReservationById(reservationId, dataExist);
+                return dataExist;
+            }
+
+            catch (NotFoundException ex)
+            {
+                throw ex;
+            }
+            catch
+            (Exception ex)
+            {
                 this._logger.LogError(ex.ToString());
                 throw new Exception(ex.Message);
             }

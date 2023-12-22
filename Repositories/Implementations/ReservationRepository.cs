@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using BusinessObjects.DataModels;
+using BusinessObjects.DTO.ReservationDTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Repositories.Interfaces;
@@ -61,6 +62,20 @@ namespace Repositories.Implementations
                     .Where(r => r.ReservationId == reservationId)
                     .FirstOrDefaultAsync();
                 return data;
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex.Message);
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task UpdateReservationById(int reservationId, Reservation dataUpdate)
+        {
+            try
+            {
+                this._context.Reservations.Update(dataUpdate);
+                await this._context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
