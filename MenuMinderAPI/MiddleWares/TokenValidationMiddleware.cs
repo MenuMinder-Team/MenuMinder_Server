@@ -88,6 +88,7 @@ namespace MenuMinderAPI.MiddleWares
                 { "/api/accounts/create", new List <string> { "POST" } },
                 { "/api/accounts", new List <string> { "GET", "PUT", "DELETE" } },
                 { "/api/me", new List <string> { "GET", "PUT" } },
+                { "/api/reservations", new List<string> {"GET", "PUT", "POST" } },
             };
             // get information of request
             var requestPath = context.Request.Path;
