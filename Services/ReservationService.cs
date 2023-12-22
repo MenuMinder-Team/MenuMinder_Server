@@ -48,5 +48,19 @@ namespace Services
                 throw new Exception(ex.Message);
             }
         }
+
+        public async Task<List<Reservation>> getAllReservation()
+        {
+            try
+            {
+                List<Reservation> reservations = await this._reservationRepository.FindAllReservation();
+                return reservations;
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex.ToString());
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }

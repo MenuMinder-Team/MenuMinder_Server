@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Repositories.Interfaces;
 using Services;
 using BusinessObjects.DTO.ReservationDTO;
+using BusinessObjects.DTO.AccountDTO;
 
 namespace MenuMinderAPI.Controllers
 {
@@ -39,6 +40,16 @@ namespace MenuMinderAPI.Controllers
             await this._reservationService.createReservation(dataInvo);
             response.message = "Created reservation success";
 
+            return Ok(response);
+        }
+
+        // GET: api/reservations/all
+        [HttpGet("all")]
+        public async Task<ActionResult> GetAllReservation()
+        {
+            ApiResponse<List<Reservation>> response = new ApiResponse<List<Reservation>>();
+            List<Reservation> reservationResults = await this._reservationService.getAllReservation();
+            response.data = reservationResults;
             return Ok(response);
         }
     }

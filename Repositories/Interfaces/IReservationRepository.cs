@@ -7,8 +7,9 @@ using BusinessObjects.DataModels;
 
 namespace Repositories.Interfaces
 {
-  public interface IReservationRepository
-  {
-    public Task InsertReservation(Reservation reservation);
-  }
+    public interface IReservationRepository
+    {
+        public Task InsertReservation(Reservation reservation);
+        public Task<List<Reservation>> FindAllReservation();
+    }
 }
