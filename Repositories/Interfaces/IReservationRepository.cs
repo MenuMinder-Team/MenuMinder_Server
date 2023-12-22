@@ -14,5 +14,6 @@ namespace Repositories.Interfaces
         public Task<List<Reservation>> FindAllReservation();
         public Task<Reservation> FindReservationById(int reservationId);
         public Task UpdateReservationById(int reservationId, Reservation ReservationUpdate);
+        public Task DeleteReservationById(Reservation reservationDelete);
     }
 }

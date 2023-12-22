@@ -114,5 +114,29 @@ namespace Services
                 throw new Exception(ex.Message);
             }
         }
+
+        public async Task DeleteReservation(int reservationId)
+        {
+            try
+            {
+                Reservation dataExist = await this._reservationRepository.FindReservationById(reservationId);
+                if (dataExist == null)
+                {
+                    throw new NotFoundException($"Not found Reservation with Id = {reservationId}");
+                }
+
+                await this._reservationRepository.DeleteReservationById(dataExist);
+            }
+            catch (NotFoundException ex)
+            {
+                throw ex;
+            }
+            catch
+            (Exception ex)
+            {
+                this._logger.LogError(ex.ToString());
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }

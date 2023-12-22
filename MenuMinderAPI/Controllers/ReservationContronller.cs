@@ -73,5 +73,15 @@ namespace MenuMinderAPI.Controllers
             response.data = reservationResult;
             return Ok(response);
         }
+
+        // DELETE: api/reservations/delete/{reservationId}
+        [HttpDelete("delete/{reservationId}")]
+        public async Task<ActionResult> DeleteReservation(int reservationId)
+        {
+            ApiResponse<NoContentResult> response = new ApiResponse<NoContentResult>();
+            await this._reservationService.DeleteReservation(reservationId);
+            response.message = "Deleted success";
+            return Ok(response);
+        }
     }
 }

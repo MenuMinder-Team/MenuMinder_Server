@@ -47,9 +47,9 @@ namespace Repositories.Implementations
                 List<Reservation> data = await this._context.Reservations.OrderByDescending(r => r.ReservationTime).ToListAsync();
                 return data;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                this._logger.LogError(ex.Message);  
+                this._logger.LogError(ex.Message);
                 throw new Exception(ex.Message);
             }
         }
@@ -75,6 +75,20 @@ namespace Repositories.Implementations
             try
             {
                 this._context.Reservations.Update(dataUpdate);
+                await this._context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex.Message);
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task DeleteReservationById(Reservation data)
+        {
+            try
+            {
+                this._context.Reservations.Remove(data);
                 await this._context.SaveChangesAsync();
             }
             catch (Exception ex)
