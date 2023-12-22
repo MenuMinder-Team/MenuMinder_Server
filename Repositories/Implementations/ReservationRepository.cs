@@ -52,5 +52,21 @@ namespace Repositories.Implementations
                 throw new Exception(ex.Message);
             }
         }
+
+        public async Task<Reservation> FindReservationById(int reservationId)
+        {
+            try
+            {
+                Reservation data = await this._context.Reservations
+                    .Where(r => r.ReservationId == reservationId)
+                    .FirstOrDefaultAsync();
+                return data;
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex.Message);
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }

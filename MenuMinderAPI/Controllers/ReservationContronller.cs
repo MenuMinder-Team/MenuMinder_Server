@@ -52,5 +52,15 @@ namespace MenuMinderAPI.Controllers
             response.data = reservationResults;
             return Ok(response);
         }
+
+        // GET: api/reservations/{reservationId}
+        [HttpGet("{reservationId}")]
+        public async Task<ActionResult> GetDetailReservation(int reservationId)
+        {
+            ApiResponse<Reservation> response = new ApiResponse<Reservation>();
+            Reservation reservationResults = await this._reservationService.getAnReservation(reservationId);
+            response.data = reservationResults;
+            return Ok(response);
+        }
     }
 }

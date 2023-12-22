@@ -62,5 +62,18 @@ namespace Services
                 throw new Exception(ex.Message);
             }
         }
+
+        public async Task<Reservation> getAnReservation(int reservationId)
+        {
+            try
+            {
+                Reservation reservationResult = await this._reservationRepository.FindReservationById(reservationId);
+                return reservationResult;
+            }
+            catch(Exception ex) {
+                this._logger.LogError(ex.ToString());
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }
