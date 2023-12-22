@@ -456,6 +456,8 @@ namespace BusinessObjects.DataModels
                     .HasConstraintName("fk_tableused_table");
             });
 
+            modelBuilder.Entity<Reservation>().Property(e => e.ReservationTime).HasColumnType("timestamp without time zone");
+
             OnModelCreatingPartial(modelBuilder);
         }
 
