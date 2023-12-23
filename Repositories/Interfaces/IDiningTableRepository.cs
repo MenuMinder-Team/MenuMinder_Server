@@ -16,6 +16,7 @@ namespace Repositories.Interfaces
         public Task<DiningTable> FindDiningTableEntityById(int tableId);
         public Task UpdateDiningTable(DiningTable table);
         public Task DeleteDiningTable(DiningTable table);
-
+        public Task<List<DiningTable>> GetListTableWithIds(List<int> tableIds);
+        public Task UpdateBulkAvailbleByIds(List<int> tableIds);
     }
 }
