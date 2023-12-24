@@ -91,5 +91,33 @@ namespace Repositories.Implementations
                 throw;
             }
         }
+
+        public async Task UpdateFoodOrder(FoodOrder foodOrder)
+        {
+            try
+            {
+                this._context.FoodOrders.Update(foodOrder);
+                await this._context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex.ToString());
+                throw;
+            }
+        }
+
+        public async Task<FoodOrder> FindById(int foodOrderId)
+        {
+            try
+            {
+                FoodOrder result = await this._context.FoodOrders.Where(foodOrder => foodOrder.FoodOrderId == foodOrderId).FirstOrDefaultAsync();
+                return result;
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex.ToString());
+                throw;
+            }
+        }
     }
 }

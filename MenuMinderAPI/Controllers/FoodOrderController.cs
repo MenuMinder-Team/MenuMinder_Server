@@ -27,5 +27,14 @@ namespace MenuMinderAPI.Controllers
             response.data = foods;
             return Ok(response);
         }
+
+        [HttpPut("update-status/{foodOrderId}")]
+        public async Task<ActionResult> UpdateFoodOrderStatus ([FromQuery] string? status, int foodOrderId)
+        {
+            ApiResponse<NoContentResult> response = new ApiResponse<NoContentResult>();
+            await this._foodOrderService.UpdateFoodOrder(foodOrderId, status);
+            response.message = "Updated status success";
+            return Ok(response);
+        }
     }
 }

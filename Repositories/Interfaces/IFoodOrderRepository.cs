@@ -12,5 +12,7 @@ namespace Repositories.Interfaces
     {
         public Task InsertBulk(List<FoodOrder> datas);
         public Task <List<FoodOrderShortDto>> FindFoodOrderWithStatus(string status);
+        public Task UpdateFoodOrder(FoodOrder foodOrder);
+        public Task<FoodOrder> FindById(int foodOrderId);
     }
 }

@@ -9,6 +9,7 @@ using BusinessObjects.DTO.FoodOrderDTO;
 using BusinessObjects.Enum;
 using Microsoft.Extensions.Logging;
 using Repositories.Interfaces;
+using Services.Exceptions;
 
 namespace Services
 {
@@ -48,6 +49,43 @@ namespace Services
                 // get list food orders
                 List<FoodOrderShortDto> foodOrders = await this._foodOrderRepository.FindFoodOrderWithStatus(statusFoodOrder);
                 return foodOrders;
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex.ToString());
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task UpdateFoodOrder(int foodOrderId, string status)
+        {
+            try
+            {
+                // validate status invo
+                var validStatus = new[] { "PENDING", "PROCESSING", "SERVED" };
+                if(string.IsNullOrEmpty(status))
+                {
+                    throw new BadRequestException("status is required");
+                }
+                if (!validStatus.Contains(status))
+                {
+                    throw new BadRequestException($"status {status} invalid");
+                }
+
+                // check exist food order
+                FoodOrder foodOrderExist = await this._foodOrderRepository.FindById(foodOrderId);
+                if (foodOrderExist == null)
+                {
+                    throw new BadRequestException($"FoodOrder with Id = {foodOrderId} not exist");
+                }
+                foodOrderExist.Status = status;
+
+                // update food order status
+                await this._foodOrderRepository.UpdateFoodOrder(foodOrderExist);
+            }
+            catch (BadRequestException ex)
+            {
+                throw ex;
             }
             catch (Exception ex)
             {
