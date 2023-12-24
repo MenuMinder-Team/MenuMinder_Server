@@ -80,7 +80,7 @@ namespace Repositories.Implementations
                             Note = foodOrder.Note,
                             CreatedAt = foodOrder.CreatedAt
                         })
-                        .OrderBy(f => f.CreatedAt)
+                        .OrderByDescending(f => f.CreatedAt)
                         .ToListAsync();
                 }
                 return foodResults;
