@@ -90,6 +90,7 @@ builder.Services.AddScoped<IPermitRepository, PermitRepository>();
 builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 builder.Services.AddScoped<IServingRepository, ServingRepository>();
 builder.Services.AddScoped<ITableUsedRepository, TableUsedRepository>();
+builder.Services.AddScoped<IFoodOrderRepository, FoodOrderRepository>();
 
 // configure DI for application services
 builder.Services.AddScoped<DiningTableService, DiningTableService>();

@@ -5,6 +5,7 @@ using BusinessObjects.DTO.ServingDTO;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 using BusinessObjects.DataModels;
+using BusinessObjects.DTO.FoodOrderDTO;
 
 namespace MenuMinderAPI.Controllers
 {
@@ -49,6 +50,16 @@ namespace MenuMinderAPI.Controllers
             object servingResults= await this._servingService.GetAllUnpaidServing();
             response.data = servingResults;
 
+            return Ok(response);
+        }
+
+        // POST: api/serving/:servingId/food-order
+        [HttpPost("{servingId}/food-order")]
+        public async Task<ActionResult> OrderFood(int servingId, [FromBody] List<FoodOrderAddDTO> foods)
+        {
+            ApiResponse<NoContentResult> response = new ApiResponse<NoContentResult>();
+            await this._servingService.OrderFood(servingId, foods);
+            response.message = "Order food success";
             return Ok(response);
         }
     }

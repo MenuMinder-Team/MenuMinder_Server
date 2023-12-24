@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using BusinessObjects.DataModels;
+using BusinessObjects.DTO.FoodOrderDTO;
 using BusinessObjects.DTO.ServingDTO;
 using BusinessObjects.Enum;
 using Microsoft.Extensions.Logging;
@@ -17,16 +18,20 @@ namespace Services
     {
         private readonly IServingRepository _servingRepository;
         private readonly IDiningTableRepository _diningTableRepository;
+        private readonly IFoodOrderRepository _foodOrderRepository;
+        private readonly IFoodRepository _foodRepository;
         private readonly ITableUsedRepository _tableUsedRepository;
         private readonly IMapper _mapper;
         private readonly ILogger<ServingService> _logger;
 
 
-        public ServingService(IMapper mapper, ILogger<ServingService> logger, IServingRepository servingRepository, IDiningTableRepository diningTableRepository, ITableUsedRepository tableUsedRepository)
+        public ServingService(IMapper mapper, ILogger<ServingService> logger, IServingRepository servingRepository, IDiningTableRepository diningTableRepository, ITableUsedRepository tableUsedRepository, IFoodOrderRepository foodOrderRepository, IFoodRepository foodRepository)
         {
             this._servingRepository = servingRepository;
             this._diningTableRepository = diningTableRepository;
             this._tableUsedRepository = tableUsedRepository;
+            this._foodOrderRepository = foodOrderRepository;
+            this._foodRepository = foodRepository;
             this._mapper = mapper;
             this._logger = logger;
         }
@@ -82,6 +87,47 @@ namespace Services
             {
                 object results = await this._servingRepository.GetAllUnpaidServing();
                 return results;
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex.ToString());
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task OrderFood(int servingId, List<FoodOrderAddDTO> foods)
+        {
+            try
+            {
+                // check Food Available in Menu
+                List<int> foodIdInvos = foods.Select(f => f.FoodId).ToList(); 
+                List<Food> foodExists = await this._foodRepository.FindFoodBelongIds(foodIdInvos);
+                foodExists.ForEach(food =>
+                {
+                    if (!foodIdInvos.Contains(food.FoodId) || food.Status != EnumFoodStatus.AVAILABLE.ToString())
+                    {
+                        throw new BadRequestException($"Food {food.Name} with ID = {food.FoodId} is not Available");
+                    }
+                });
+
+                // Add FoodOrder
+                List<FoodOrder> foodOrderCreate = foods.Select(food =>
+                new FoodOrder
+                {
+                    ServingId = servingId,
+                    FoodId = food.FoodId,
+                    Note = food.Note,
+                    Price = food.Price,
+                    Status = EnumFoodOrderStatus.PENDING.ToString(),
+                    Quantity = food.Quantity,
+                })
+                .ToList();
+
+                await this._foodOrderRepository.InsertBulk(foodOrderCreate);
+            }
+            catch (BadRequestException ex)
+            {
+                throw ex;
             }
             catch (Exception ex)
             {
