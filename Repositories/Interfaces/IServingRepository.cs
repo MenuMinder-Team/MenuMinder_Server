@@ -11,5 +11,6 @@ namespace Repositories.Interfaces
     public interface IServingRepository
     {
         public Task<Serving> InsertServing(Serving servingCreate);
+        public Task<object> GetAllUnpaidServing();
     }
 }

@@ -75,5 +75,19 @@ namespace Services
                 throw new Exception(ex.Message);
             }
         }
+
+        public async Task<object> GetAllUnpaidServing()
+        {
+            try
+            {
+                object results = await this._servingRepository.GetAllUnpaidServing();
+                return results;
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex.ToString());
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }
