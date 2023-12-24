@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using BusinessObjects.DataModels;
+using BusinessObjects.DTO.FoodOrderDTO;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Repositories.Interfaces;
 
@@ -33,6 +36,54 @@ namespace Repositories.Implementations
                     this._context.FoodOrders.Add(data);
                 });
                 await this._context.SaveChangesAsync(); 
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex.ToString());
+                throw;
+            }
+        }
+
+        public async Task<List<FoodOrderShortDto>> FindFoodOrderWithStatus(string status)
+        {
+            try
+            {
+                List<FoodOrderShortDto> foodResults = new List<FoodOrderShortDto>();
+                if (status == "ALL") {
+                    foodResults =  await this._context.FoodOrders
+                        .Select(foodOrder => new FoodOrderShortDto
+                        {
+                            FoodOrderId = foodOrder.FoodOrderId,
+                            FoodName = foodOrder.Food.Name,
+                            FoodId = foodOrder.FoodId,
+                            ServingId = foodOrder.ServingId,
+                            Quantity = foodOrder.Quantity,
+                            Status = foodOrder.Status,
+                            Note = foodOrder.Note,
+                            CreatedAt = foodOrder.CreatedAt
+                        })
+                        .OrderBy(f => f.CreatedAt)
+                        .ToListAsync();
+                }
+                else
+                {
+                    foodResults = await this._context.FoodOrders
+                        .Where(foodOrder => foodOrder.Status == status)
+                        .Select(foodOrder => new FoodOrderShortDto
+                        {
+                            FoodOrderId = foodOrder.FoodOrderId,
+                            FoodName = foodOrder.Food.Name,
+                            FoodId = foodOrder.FoodId,
+                            ServingId = foodOrder.ServingId,
+                            Quantity = foodOrder.Quantity,
+                            Status = foodOrder.Status,
+                            Note = foodOrder.Note,
+                            CreatedAt = foodOrder.CreatedAt
+                        })
+                        .OrderBy(f => f.CreatedAt)
+                        .ToListAsync();
+                }
+                return foodResults;
             }
             catch (Exception ex)
             {

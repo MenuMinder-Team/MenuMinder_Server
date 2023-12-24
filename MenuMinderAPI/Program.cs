@@ -103,6 +103,7 @@ builder.Services.AddScoped<PermissionService, PermissionService>();
 builder.Services.AddScoped<MeService, MeService>();
 builder.Services.AddScoped<ReservationService, ReservationService>();
 builder.Services.AddScoped<ServingService, ServingService>();
+builder.Services.AddScoped<FoodOrderService, FoodOrderService>();
 
 var app = builder.Build();
 app.UseCors("CorsPolicy");
