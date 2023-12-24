@@ -88,6 +88,9 @@ builder.Services.AddScoped<IFoodRepository, FoodRepository>();
 builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();
 builder.Services.AddScoped<IPermitRepository, PermitRepository>();
 builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
+builder.Services.AddScoped<IServingRepository, ServingRepository>();
+builder.Services.AddScoped<ITableUsedRepository, TableUsedRepository>();
+builder.Services.AddScoped<IFoodOrderRepository, FoodOrderRepository>();
 
 // configure DI for application services
 builder.Services.AddScoped<DiningTableService, DiningTableService>();
@@ -99,6 +102,8 @@ builder.Services.AddScoped<AccountService, AccountService>();
 builder.Services.AddScoped<PermissionService, PermissionService>();
 builder.Services.AddScoped<MeService, MeService>();
 builder.Services.AddScoped<ReservationService, ReservationService>();
+builder.Services.AddScoped<ServingService, ServingService>();
+builder.Services.AddScoped<FoodOrderService, FoodOrderService>();
 
 var app = builder.Build();
 app.UseCors("CorsPolicy");
