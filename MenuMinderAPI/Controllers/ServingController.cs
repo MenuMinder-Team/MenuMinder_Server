@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Services;
 using BusinessObjects.DataModels;
 using BusinessObjects.DTO.FoodOrderDTO;
+using NuGet.Packaging.Signing;
 
 namespace MenuMinderAPI.Controllers
 {
@@ -60,6 +61,16 @@ namespace MenuMinderAPI.Controllers
             ApiResponse<NoContentResult> response = new ApiResponse<NoContentResult>();
             await this._servingService.OrderFood(servingId, foods);
             response.message = "Order food success";
+            return Ok(response);
+        }
+
+        // GET: api/serving/detail/:servingId
+        [HttpGet("detail/{servingId}")]
+        public async Task<ActionResult> GetDeatailServing(int servingId)
+        {
+            ApiResponse<object> response = new ApiResponse<object>();
+            var result = await this._servingService.GetDetailServing(servingId);
+            response.data = result;
             return Ok(response);
         }
     }

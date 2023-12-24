@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BusinessObjects.DataModels;
+using Microsoft.Extensions.Logging;
+using Repositories.Implementations;
 
 namespace Repositories.Interfaces
 {
-    public interface ITableUsedRepository
+    public interface IBillRepository
     {
-        public Task InsertBulk(List<TableUsed> datas);
-        public Task<List<DiningTable>> GetTableIdsInServing(int servingId);
+        public Task InsertBill(Bill billCreate);
     }
 }

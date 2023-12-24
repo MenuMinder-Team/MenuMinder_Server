@@ -12,5 +12,7 @@ namespace Repositories.Interfaces
     {
         public Task<Serving> InsertServing(Serving servingCreate);
         public Task<object> GetAllUnpaidServing();
+        public Task<object> getDetailServingById(int servingId);
+        public Task<float> CalcTotalPrice(int servingId);
     }
 }

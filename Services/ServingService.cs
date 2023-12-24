@@ -100,7 +100,7 @@ namespace Services
             try
             {
                 // check Food Available in Menu
-                List<int> foodIdInvos = foods.Select(f => f.FoodId).ToList(); 
+                List<int> foodIdInvos = foods.Select(f => f.FoodId).ToList();
                 List<Food> foodExists = await this._foodRepository.FindFoodBelongIds(foodIdInvos);
                 foodExists.ForEach(food =>
                 {
@@ -125,6 +125,29 @@ namespace Services
 
                 await this._foodOrderRepository.InsertBulk(foodOrderCreate);
             }
+            catch (BadRequestException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex.ToString());
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<object> GetDetailServing(int servingId)
+        {
+            try
+            {
+                // get serving Detail
+                var servingResult = await this._servingRepository.getDetailServingById(servingId);
+
+                // calc Total Price
+                var totalPrice = await this._servingRepository.CalcTotalPrice(servingId);
+
+                return new { totalPrice, servingResult };
+                }
             catch (BadRequestException ex)
             {
                 throw ex;
