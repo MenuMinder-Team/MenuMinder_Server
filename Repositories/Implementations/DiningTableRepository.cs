@@ -157,5 +157,21 @@ namespace Repositories
                 throw new Exception(ex.Message);
             }
         }
+        public async Task UpdateBulk(List<DiningTable> tables)
+        {
+            try
+            {
+                foreach (DiningTable table in tables)
+                {
+                    this._context.DiningTables.Update(table);
+                }
+                await this._context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex.ToString());
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }

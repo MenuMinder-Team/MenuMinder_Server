@@ -10,5 +10,6 @@ namespace Repositories.Interfaces
     public interface ITableUsedRepository
     {
         public Task InsertBulk(List<TableUsed> datas);
+        public Task<List<DiningTable>> GetTableIdsInServing(int servingId);
     }
 }
