@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -7,9 +8,15 @@ using System.Threading.Tasks;
 
 namespace BusinessObjects.DTO.StatisticDTO
 {
-    public record ResultRevenueDTO
+    public record StatisticDTO
     {
-        DateOnly reportDate { get; set; }
-        long total_revenue { get; set; }
+        public DateTime ReportDate { get; set; }
+        public long TotalRevenue { get; set; }
+
+        public StatisticDTO(DateTime report_date, long total_revenue)
+        {
+            ReportDate = report_date;
+            TotalRevenue = total_revenue;
+        }
     }
 }
