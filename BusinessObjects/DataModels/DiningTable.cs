@@ -1,8 +1,7 @@
-﻿using BusinessObjects.DTO;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
-namespace BusinessObjects.DataModels
+namespace BusinessObjects.DataAccess
 {
     public partial class DiningTable
     {

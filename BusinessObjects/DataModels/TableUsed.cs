@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace BusinessObjects.DataModels
+namespace BusinessObjects.DataAccess
 {
     public partial class TableUsed
     {
