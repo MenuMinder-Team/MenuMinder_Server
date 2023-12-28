@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace BusinessObjects.DataAccess
+namespace BusinessObjects.DataModels
 {
     public partial class Category
     {
@@ -14,6 +14,7 @@ namespace BusinessObjects.DataAccess
         public string CategoryName { get; set; } = null!;
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public string Status { get; set; }
 
         public virtual ICollection<Food> Foods { get; set; }
     }

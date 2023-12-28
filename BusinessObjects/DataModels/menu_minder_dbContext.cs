@@ -1,17 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using BusinessObjects.DTO.StatisticDTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.Configuration;
+using Npgsql;
 
-namespace BusinessObjects.DataAccess
+namespace BusinessObjects.DataModels
 {
-    public partial class menu_minder_dbContext : DbContext
+    public partial class Menu_minder_dbContext : DbContext
     {
-        public menu_minder_dbContext()
+
+        public Menu_minder_dbContext()
         {
         }
 
-        public menu_minder_dbContext(DbContextOptions<menu_minder_dbContext> options)
+        public Menu_minder_dbContext(DbContextOptions<Menu_minder_dbContext> options)
             : base(options)
         {
         }
@@ -29,12 +33,18 @@ namespace BusinessObjects.DataAccess
         public virtual DbSet<Serving> Servings { get; set; } = null!;
         public virtual DbSet<TableUsed> TableUseds { get; set; } = null!;
 
+
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Server=localhost;Port=5432;User ID=postgres;Password=1234;Database=menu_minder_db;");
+                IConfigurationRoot configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+                string connectionString = configuration.GetConnectionString("DefaultConnection");
+                optionsBuilder.UseNpgsql(connectionString);
             }
         }
 
@@ -64,6 +74,8 @@ namespace BusinessObjects.DataAccess
                     .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                 entity.Property(e => e.DateOfBirth).HasColumnName("date_of_birth");
+
+                entity.Property(e => e.Role).HasColumnName("role");
 
                 entity.Property(e => e.Email).HasColumnName("email");
 
@@ -142,6 +154,11 @@ namespace BusinessObjects.DataAccess
                     .HasColumnType("timestamp without time zone")
                     .HasColumnName("updated_at")
                     .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                entity.Property(e => e.Status)
+                    .HasMaxLength(10)
+                    .HasColumnName("status")
+                    .HasDefaultValueSql("'ACTIVE'::character varying");
             });
 
             modelBuilder.Entity<DiningTable>(entity =>
@@ -327,7 +344,7 @@ namespace BusinessObjects.DataAccess
                 entity.HasOne(d => d.Permission)
                     .WithMany(p => p.Permits)
                     .HasForeignKey(d => d.PermissionId)
-                    .HasConstraintName("fk_permit_permission");
+                 .HasConstraintName("fk_permit_permission");
             });
 
             modelBuilder.Entity<Reservation>(entity =>
@@ -442,6 +459,16 @@ namespace BusinessObjects.DataAccess
                     .HasForeignKey(d => d.TableId)
                     .HasConstraintName("fk_tableused_table");
             });
+
+            // Mapping data type timestamp Postgres
+            // Reservation Entity:
+            modelBuilder.Entity<Reservation>().Property(e => e.ReservationTime).HasColumnType("timestamp without time zone");
+            modelBuilder.Entity<Reservation>().Property(e => e.UpdatedAt).HasColumnType("timestamp without time zone");
+            
+            // Serving Entity:
+            modelBuilder.Entity<Serving>().Property(e => e.UpdatedAt).HasColumnType("timestamp without time zone");
+            modelBuilder.Entity<Serving>().Property(e => e.TimeIn).HasColumnType("timestamp without time zone");
+            modelBuilder.Entity<Serving>().Property(e => e.TimeOut).HasColumnType("timestamp without time zone");
 
             OnModelCreatingPartial(modelBuilder);
         }

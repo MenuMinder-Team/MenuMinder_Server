@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using BusinessObjects.Enum;
 
-namespace BusinessObjects.DataAccess
+namespace BusinessObjects.DataModels
 {
     public partial class Account
     {
@@ -18,6 +19,7 @@ namespace BusinessObjects.DataAccess
         public string Email { get; set; } = null!;
         public string Password { get; set; } = null!;
         public string Name { get; set; } = null!;
+        public string Role { get; set; } = EnumRole.STAFF.ToString();
         public DateOnly? DateOfBirth { get; set; }
         public bool? IsBlock { get; set; }
         public bool? Gender { get; set; }
