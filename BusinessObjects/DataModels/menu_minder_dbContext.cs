@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using BusinessObjects.DTO.StatisticDTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
@@ -30,6 +31,12 @@ namespace BusinessObjects.DataModels
         public virtual DbSet<Reservation> Reservations { get; set; } = null!;
         public virtual DbSet<Serving> Servings { get; set; } = null!;
         public virtual DbSet<TableUsed> TableUseds { get; set; } = null!;
+
+        public async Task<List<ResultRevenueDTO>> GetRevenueReport(DateTime fromDate, DateTime toDate, string reportType)
+        {
+            return await Set<ResultRevenueDTO>().FromSqlRaw("SELECT * FROM generate_report({0}, {1}, {2})", fromDate, toDate, reportType).ToListAsync();
+        }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
