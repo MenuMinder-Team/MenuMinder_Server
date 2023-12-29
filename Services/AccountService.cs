@@ -164,6 +164,11 @@ namespace Services
                     existAccount.IsBlock = updateAccountDTO?.IsBlock ?? existAccount.IsBlock;
                     existAccount.UpdatedAt = DateTime.Now;
 
+                if (updateAccountDTO?.PermissionIds != null)
+                {
+                    await updateAccountPermits(existAccount.AccountId.ToString(), updateAccountDTO.PermissionIds.ToList());
+                }
+
                 if(existAccount != null)
                     await _accountRepository.UpdateAccount(existAccount);
             }
