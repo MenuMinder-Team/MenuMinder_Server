@@ -161,6 +161,7 @@ namespace Services
                     existAccount.PhoneNumber = updateAccountDTO?.PhoneNumber ?? existAccount.PhoneNumber;
                     existAccount.Name = updateAccountDTO?.Name ?? existAccount.Name;
                     existAccount.Gender = updateAccountDTO?.Gender ?? existAccount.Gender;
+                    existAccount.Avatar = updateAccountDTO?.Avatar ?? existAccount.Avatar;
                     existAccount.DateOfBirth = updateAccountDTO?.DateOfBirth ?? existAccount.DateOfBirth;
                     existAccount.IsBlock = updateAccountDTO?.IsBlock ?? existAccount.IsBlock;
                     existAccount.UpdatedAt = DateTime.Now;
