@@ -92,7 +92,7 @@ namespace Repositories.Implementations
                             {
                                 long servingCount = (long)reader["serving_count"];
                                 long customerCount = (long)reader["customer_count"];
-                                double restaurantRating = (double)reader["restaurant_rating"];
+                                decimal restaurantRating = (decimal)reader["restaurant_rating"];
                                 long feedbackCount = (long)reader["feedback_count"];
 
                                 result = new GeneralStatisticDTO(servingCount, customerCount, restaurantRating, feedbackCount);
