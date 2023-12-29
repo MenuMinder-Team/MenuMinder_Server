@@ -59,7 +59,7 @@ namespace MenuMinderAPI.Controllers
         }
 
         // GET: api/bill
-        [HttpGet("/{servingId}")]
+        [HttpGet("{servingId}")]
         public ActionResult gettBillDetail(int servingId)
         {
             var userFromToken = new ResultValidateTokenDto
