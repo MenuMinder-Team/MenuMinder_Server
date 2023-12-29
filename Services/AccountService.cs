@@ -40,6 +40,7 @@ namespace Services
                 accountCreate.Email = dataInvo.Email;
                 accountCreate.Password = dataInvo.Password;
                 accountCreate.Gender = dataInvo.Gender;
+                accountCreate.Avatar = dataInvo.Avatar;
                 accountCreate.Name = dataInvo.Name;
                 accountCreate.PhoneNumber = dataInvo.PhoneNumber;
 
