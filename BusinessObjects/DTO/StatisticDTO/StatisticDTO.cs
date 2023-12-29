@@ -23,10 +23,10 @@ namespace BusinessObjects.DTO.StatisticDTO
     {
         public long servingCount { get; set; }
         public long customerCount { get; set; }
-        public double restaurantRating { get; set; }
+        public decimal restaurantRating { get; set; }
         public long feedbackCount { get; set; }
 
-        public GeneralStatisticDTO(long servingCount, long customerCount, double restaurantRating, long feedbackCount)
+        public GeneralStatisticDTO(long servingCount, long customerCount, decimal restaurantRating, long feedbackCount)
         {
             this.servingCount = servingCount;
             this.customerCount = customerCount;
